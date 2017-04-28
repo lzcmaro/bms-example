@@ -1,0 +1,17 @@
+{
+  "name": "backbone-require-boilerplate",
+  "version": "1.0.0",
+  "description": "backbone-require-boilerplate",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "backbone",
+    "require",
+    "requirejs",
+    "boilerplate"
+  ],
+  "author": "lzcmaro@163.com",
+  "license": "MIT"
+}

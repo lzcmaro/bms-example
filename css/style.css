@@ -1,0 +1,15 @@
+#container, 
+#main {
+  height: 100%;
+  overflow: hidden;
+}
+/**
+ * header
+ * ----------------------
+ */
+.skin-blue .main-header .navbar .nav > li.user > a:hover, 
+.skin-blue .main-header .navbar .nav > li.user > a:active, 
+.skin-blue .main-header .navbar .nav > li.user > a:focus {
+  background: inherit;
+  color: #fff;
+}
