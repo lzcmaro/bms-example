@@ -1,5 +1,5 @@
 define(['marionette'], function(Marionette) {
-  return Marionette.LayoutView.extend({
+  return Marionette.View.extend({
       el: '#container',
       regions: {
         header: '#header',

@@ -3,8 +3,41 @@
   <section class="sidebar">
     <!-- sidebar menu: : style can be found in sidebar.less -->
     <ul class="sidebar-menu">
-      <!-- 功能管理 -->
-      <li class="header">功能管理</li>
+      <% _.each(items, function(section) {%>        
+        <!-- section -->
+        <li class="header"><%=section.label%></li>
+        
+        <!-- menus -->
+        <% _.each(section.menus, function(menu) {%>
+
+          <% if(menu.children) {%> 
+            <li class="treeview">
+              <a href="javascript:;">
+                <i class="fa fa-pie-chart"></i> <span><%= menu.label %></span>
+                <span class="pull-right-container">
+                  <i class="fa fa-angle-left pull-right"></i>
+                </span>
+              </a>
+              <ul class="treeview-menu">
+                <% _.each(menu.children, function(menu) {%>
+                  <li><a href="<%- menu.url %>"><i class="fa fa-circle-o"></i> <%= menu.label %></a></li>
+                <%});%>
+              </ul>
+            </li>
+          <%} else {%>
+            <li>
+              <a href="<%- menu.url %>">
+                <i class="fa fa-pie-chart"></i> <span><%= menu.label %></span>
+              </a>
+            </li>
+          <%};%>
+
+        <%});%>
+        <!-- /.menus -->
+
+      <%});%>
+      
+      <!-- <li class="header">功能管理</li>
       <li>
         <a href="#">
           <i class="fa fa-pie-chart"></i> <span>产品管理</span>
@@ -23,12 +56,11 @@
           <li><a href="#"><i class="fa fa-circle-o"></i> 借款信息查询</a></li>
         </ul>
       </li>
-      
-      <!-- 系统管理 -->
+
       <li class="header">系统管理</li>
       <li><a href="#"><i class="fa fa-gears"></i> <span>用户管理</span></a></li>
       <li><a href="#"><i class="fa fa-gears"></i> <span>角色管理</span></a></li>
-      <li><a href="#"><i class="fa fa-gears"></i> <span>权限管理</span></a></li>
+      <li><a href="#"><i class="fa fa-gears"></i> <span>权限管理</span></a></li> -->
     </ul>
   </section>
   <!-- /.sidebar -->

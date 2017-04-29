@@ -3,13 +3,13 @@ require.config({
   waitSeconds: 0,
   baseUrl: 'js', //依赖相对路径
   paths: {
-    jquery: 'lib/jquery.min',
+    jquery: 'lib/jquery/jquery.min',
     bootstrap: 'lib/bootstrap/js/bootstrap.min',
-    underscore: 'lib/underscore-min',
-    backbone: 'lib/backbone',
-    // 'backbone.radio': 'lib/backbone.radio',
-    marionette: 'lib/backbone.marionette.min',
-    text: 'lib/text.min', //用于requirejs导入html类型的依赖
+    underscore: 'lib/underscore/underscore',
+    backbone: 'lib/backbone/backbone',
+    'backbone.radio': 'lib/marionette/backbone.radio',
+    marionette: 'lib/marionette/backbone.marionette',
+    text: 'lib/text/text.min', //用于requirejs导入html类型的依赖
     moment: 'lib/moment/moment.min',
     momentLocale: 'lib/moment/locale/zh-cn'
   },
@@ -25,7 +25,7 @@ require.config({
       exports: 'Backbone'
     },
     'marionette': {
-      deps: ['backbone'],
+      deps: ['backbone', 'backbone.radio'],
       exports: 'Marionette'
     },
     'bootstrap': {
@@ -37,6 +37,6 @@ require.config({
 require([
   'marionette', 
   'app'
-  ], function(Marionette, App) {
-    App.start();
-  });
+], function(Marionette, App) {
+  App.start();
+});

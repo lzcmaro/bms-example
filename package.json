@@ -4,7 +4,8 @@
   "description": "backbone-require-boilerplate",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon --watch db.json server.js"
   },
   "keywords": [
     "backbone",
@@ -13,5 +14,9 @@
     "boilerplate"
   ],
   "author": "lzcmaro@163.com",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "json-server": "^0.10.0",
+    "nodemon": "^1.11.0"
+  }
 }

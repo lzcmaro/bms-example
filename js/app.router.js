@@ -5,5 +5,4 @@ define(['marionette'], function(Marionette) {
       "*actions": "defaultAction"
     }
   })
-
 });
