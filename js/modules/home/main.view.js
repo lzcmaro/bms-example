@@ -12,6 +12,9 @@ define(['jquery', 'underscore', 'backbone', 'marionette', 'text!modules/home/mai
       },
       onRender() {
         console.log('MainView is rendered.')
+      },
+      render() {
+        
       }
     })
   })

@@ -25,10 +25,10 @@ define([
       console.log('HeaderView is rendered.')
     },
     onToggleSidebar: function(e) {
-      this.channel.trigger('toggle:sidebar')
+      this.channel.trigger('toggle-sidebar')
     },
     onSignout: function(e) {
-      this.channel.trigger('account:signout')
+      this.channel.trigger('signout')
     }
   })
 })

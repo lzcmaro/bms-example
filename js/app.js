@@ -4,11 +4,27 @@ define([
   'backbone', 
   'marionette', 
   'app.layout', 
+  'app.model',
   'app.controller', 
   'app.router',
-  'config'
-], function($, _, Backbone, Marionette, LayoutView, AppCtrl, AppRouter, Config) {
-
+  'config',
+  'modules/home/header.view', 
+  'modules/home/sidebar.view', 
+  'modules/home/main.view'
+], function(
+  $, 
+  _, 
+  Backbone, 
+  Marionette, 
+  LayoutView, 
+  AppModel, 
+  AppCtrl, 
+  AppRouter, 
+  Config, 
+  HeaderView, 
+  SidebarView, 
+  MainView
+) {
   'use strict';
 
   var App = Marionette.Application.extend({
@@ -18,48 +34,67 @@ define([
     },
     onBeforeStart: function() {
       console.log('App before start.');
-      // TODO: APP显示的用户信息、菜单改成Notification方式，由Backbone.Radio实现
-      // 在APP中分别加载用户信息与及菜单列表，加载成功后，通知HeaderView, SidebarView更新
+
+      // 注册layoutView
+      this.root = new LayoutView();
+      // 设置app.model，方便后面使用
+      this.model = new AppModel();
+      // 渲染root视图
+      this.root.showChildView('header', new HeaderView({model: this.model.get('account')}));
+      this.root.showChildView('sidebar', new SidebarView({collection: this.model.get('menuList')}));
+      this.root.showChildView('main', new MainView());
 
       // 初始化router
       this.router = new AppRouter({controller: new AppCtrl()});
-      // 注册layoutView
-      this.root = new LayoutView();
-
-      /**
-       * view与view间的通信通过App来调度（统一使用Application.vent事件聚合器）
-       * ----------------------------------------------------------------
-       */
-      this.headerChannel = Backbone.Radio.channel(Config.channel.header);
-      // this.sidebarChannel = Backbone.Radio.channel(Config.channel.sidebar);
-      // this.mainChannel = Backbone.Radio.channel(Config.channel.main);
-      
-      
-      this.headerChannel.on({
-        /**
-         * 切换sidebar面板样式
-         */
-        'toggle:sidebar': function() {
-          $('body').toggleClass('sidebar-collapse')
-        },
-        /**
-         * TODO: 登出
-         */
-        'account:signout': function() {
-          console.log('account:signout')
-        }
-      });
 
     },
     onStart: function() {
-      console.log('App started.', this);
-      // 监听路由变化
-      Backbone.history.start();
+      console.log('App started.');
+      var that = this;
+      // 加载用户信息以及系统菜单列表数据
+      this.model.fetch().done(function() {
+        // 监听路由变化
+        Backbone.history.start();
+      });
     }
   });
 
   // 实例化Application，并设值到window，便于后面使用
-  window.App = App = new App();   
+  window.App = App = new App();
+
+
+  /**
+   * view与view间的通信通过App来调度（统一使用Application.vent事件聚合器）
+   * ----------------------------------------------------------------
+   */
+  App.headerChannel = Backbone.Radio.channel(Config.channel.header);
+  App.sidebarChannel = Backbone.Radio.channel(Config.channel.sidebar);
+  // App.mainChannel = Backbone.Radio.channel(Config.channel.main);
+  
+  
+  App.headerChannel.on({
+    /**
+     * 切换sidebar面板样式
+     */
+    'toggle-sidebar': function() {
+      $('body').toggleClass('sidebar-collapse')
+    },
+    /**
+     * TODO: 登出
+     */
+    signout: function() {}
+  });
+
+
+  App.sidebarChannel.on({
+    // 切换路由
+    goto: function(url) {
+      if (!url || url === '#' || url === 'javascript:;') return false;
+      // TODO: 在主视图添加导航面包屑？创建新的tab页？
+    }
+  });
+
+
 
   /**
    * 由于 Marionette.Renderer.render 在获取template时，
