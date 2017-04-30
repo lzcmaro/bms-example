@@ -20,13 +20,13 @@
               </a>
               <ul class="treeview-menu">
                 <% _.each(menu.children, function(menu) {%>
-                  <li><a href="<%- menu.url %>"><i class="fa fa-circle-o"></i> <%= menu.label %></a></li>
+                  <li><a href="<%- menu.url || '#' %>"><i class="fa fa-circle-o"></i> <%= menu.label %></a></li>
                 <%});%>
               </ul>
             </li>
           <%} else {%>
             <li>
-              <a href="<%- menu.url %>">
+              <a href="<%- menu.url || '#' %>">
                 <i class="fa fa-pie-chart"></i> <span><%= menu.label %></span>
               </a>
             </li>

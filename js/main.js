@@ -36,7 +36,8 @@ require.config({
 
 require([
   'marionette', 
-  'app'
+  'app',
+  'bootstrap'
 ], function(Marionette, App) {
   App.start();
 });
