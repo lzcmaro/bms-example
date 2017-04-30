@@ -25,6 +25,12 @@ define([
 
   // 单菜项Model
   var Menu = Backbone.Model.extend({
+    defaults: {
+      url: null,
+      label: null,
+      icon: null,
+      children: []
+    },
     initialize: function() {
       /**
        * 为方便在页面模板中直接使用数据，这里对数据作过滤处理
@@ -33,8 +39,8 @@ define([
         if (!list || list.length <= 0) return;
 
         _.each(list, function(item) {
-          // 设置默认的url为javascript:;
           if (!item.url || item.url === '#') {
+            // 设置默认的url为javascript:;
             item.url = 'javascript:;'
           } else {
             // 当前应用使用的是hash方式的路由，这里给url添加#
@@ -43,11 +49,14 @@ define([
 
           item.children && filter(item.children)
         });
+
+        return list
       }
 
       this.on('add', function(model) {
-        // fiter直接改变原数据，这里不需要重新set()
-        filter(model.get('menus'));
+        var list = filter([model.toJSON()]);
+        // 传入silent:true参数，避免其触发change事件
+        model.set(list[0], {silent: true});     
       })
     }
   });

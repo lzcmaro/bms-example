@@ -7,15 +7,18 @@
   "menus": [
     {
       "id": "101",
+      "type": "section",
       "label": "功能管理",
-      "menus": [
+      "children": [
         {
           "id": "1001",
-          "label": "产品管理"
+          "label": "产品管理",
+          "icon": "fa fa-pie-chart"
         },
         {
           "id": "1002",
           "label": "贷款管理",
+          "icon": "fa fa-pie-chart",
           "children": [
             {
               "id": "100201",
@@ -26,9 +29,8 @@
               "label": "授信信息查询"
             },
             {
-              "id": "100202",
-              "label": "借款信息查询",
-              "url": "#"
+              "id": "100203",
+              "label": "借款信息查询"
             }
           ]
         }
@@ -36,22 +38,26 @@
     },
     {
       "id": "102",
+      "type": "section",
       "label": "系统管理",
-      "menus": [
+      "children": [
         {
           "id": "1003",
           "label": "用户管理",
-          "url": "user"
+          "url": "user",
+          "icon": "fa fa-gears"
         },
         {
           "id": "1004",
           "label": "角色管理",
-          "url": "role"
+          "url": "role",
+          "icon": "fa fa-gears"
         },
         {
           "id": "1005",
           "label": "权限管理",
-          "url": "privilege"
+          "url": "privilege",
+          "icon": "fa fa-gears"
         }
       ]
     }
