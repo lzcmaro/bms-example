@@ -3,7 +3,7 @@ define([
   'underscore', 
   'backbone', 
   'marionette', 
-  'text!modules/home/header.html',
+  'text!modules/main/header.html',
   'config'
 ], function($, _, Backbone, Marionette, headerTemplate, Config) {
   return Marionette.View.extend({

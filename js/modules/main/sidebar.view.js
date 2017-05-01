@@ -3,14 +3,15 @@ define([
   'underscore', 
   'backbone', 
   'marionette', 
-  'text!modules/home/sidebar.html',
-  'text!modules/home/menu-item.html',
+  'text!modules/main/sidebar.html',
+  'text!modules/main/menu-item.html',
   'config'
 ], function($, _, Backbone, Marionette, sidebarTemplate, menuItemTemplate, Config) {
   var SectionNode = Marionette.View.extend({
-    template: '<li><%=label%></li>',
+    template: '<script type="text/tempate"><%=label%></script>',
     tagName: 'li',
-    className: 'header'
+    className: 'header',
+    replaceElement: true
   })
 
   var TreeNode = Marionette.View.extend({
@@ -65,8 +66,9 @@ define([
       var treeDatas = this.collection.toJSON(), list = [], tmp;
       if (!treeDatas.length) return;
 
+      // 如果第一层item为section类型数据，这里为方便模板渲染，
+      // 把其children的item移到外层来，以和type=section的item同级
       _.each(treeDatas, function(item) {
-        // 把
         if (item.type === 'section' && item.children && item.children.length) {
           tmp = _.clone(item);
           delete tmp.children;
@@ -83,13 +85,14 @@ define([
       this.collection.reset(list);
     },
     onRender: function() {
+      // 修改顶层ul样式为约定的sidebar-menu
       if (this.$el.parent().is('.sidebar')) {
         this.$el.removeClass('treeview-menu').addClass('sidebar-menu');
       }
     }
   });
 
-  return Marionette.View.extend({
+  var SidebarView = Marionette.View.extend({
     template: sidebarTemplate,
     className: 'main-sidebar', // AdminLTE 约定的class
     tagName: 'aside',
@@ -98,13 +101,22 @@ define([
         el: 'ul',
         replaceElement: true
       }
-    },  
+    }, 
+    ui: {
+      sidebar: '.sidebar'
+    },
     events: {
       'click li a': 'onMenuClick'
+    },
+    collectionEvents: {
+      update: 'onCollectionUpdate'
     },
     initialize: function(options) {
       console.log('SidebarView is initialized.');
       this.channel = Backbone.Radio.channel(Config.channel.sidebar);
+
+      // 切换sidebar状态后，重新fixSidebar
+      this.channel.on('toggle-sidebar', this.fixSidebar.bind(this))
     },
     onRender: function() {
       console.log('SidebarView is rendered.');
@@ -112,7 +124,33 @@ define([
       // 如果当前view也监听collectionEvents的话，它将会在当前view以及treeview都触发
       this.showChildView('treeview', new TreeView({
         collection: this.collection
-      }))
+      }));
+
+      // window.resize时，重新fixSidebar
+      $(window).on('resize', this.fixSidebar.bind(this));
+    },
+    onCollectionUpdate: function() {
+      // TreeView render完成后，重新fixSidebar
+      this.getChildView('treeview').on('render', this.fixSidebar.bind(this))
+    },
+    fixSidebar: function() {
+      var $sidebar = this.ui.sidebar;
+      var sidebarHeight = $(window).height() - $(".main-header").height();
+      var menuHeight = $sidebar.find('.sidebar-menu').height();
+      var isCollapsed = $('body').hasClass('sidebar-collapse');
+
+      //Destroy if it exists
+      $sidebar.slimScroll({destroy: true}).removeAttr('style');
+      
+      // 在collapsed状态下，由于slimScroll设置了overflow:hidden样式，会导致sidebar在hover时无法显示菜单
+      if (!isCollapsed && menuHeight >= sidebarHeight) {
+        //Add slimscroll
+        $sidebar.slimScroll({
+          height: sidebarHeight + 'px',
+          color: "rgba(255,255,255,0.7)",
+          size: "3px"
+        });
+      }
     },
     onMenuClick: function(e) {
       var $target = $(e.currentTarget),
@@ -126,26 +164,20 @@ define([
         collapsed = $('body').hasClass('sidebar-collapse'),
         href = $target.attr('href');
 
-
-      if ($item.is('.header')) {
-        return e.preventDefault();
-      }
-
-
       if (collapsed) { // sidebar收缩状态下
 
         if ($parent.is('.treeview-menu')) { // 点击的是子菜单项          
           if (hasChild) {
             // TODO: 多级菜单时，这里需要展开、收缩
           } else {
-            this.goto(href);
+            this.forward(href);
             // 移除所有li的active样式
             $wrap.find('li.active').removeClass(activeCls);
             // 给当前li以及所有的上级li.treeview都添加active样式
             $item.addClass(activeCls).parents('li.treeview').addClass(activeCls);
           }          
         } else if($parent.is('.sidebar-menu') && !hasChild) { // 点击的是一级菜单，且没有子菜单时，才切换样式
-          this.goto(href);
+          this.forward(href);
           // 移除所有li的active样式
           $wrap.find('li.active').removeClass(activeCls);
           // 给当前li添加active样式
@@ -187,16 +219,18 @@ define([
           // 给当前li以及所有的上级li.treeview都添加active样式
           $item.addClass(activeCls).parents('li.treeview').addClass(activeCls);
 
-          this.goto(href);          
+          this.forward(href);          
         }
 
       }
 
     },
-    goto: function(url) {
-      console.log('goto:', url)
+    forward: function(url) {
+      console.log('forward:', url)
       // 这里不作跳转处理，只把事件trigger出去
-      this.channel.trigger('goto', url)
+      this.channel.trigger('forward', url)
     }
-  })
+  });
+
+  return SidebarView;
 });

@@ -11,7 +11,8 @@ require.config({
     marionette: 'lib/marionette/backbone.marionette',
     text: 'lib/text/text.min', //用于requirejs导入html类型的依赖
     moment: 'lib/moment/moment.min',
-    momentLocale: 'lib/moment/locale/zh-cn'
+    momentLocale: 'lib/moment/locale/zh-cn',
+    slimScroll: 'lib/slimScroll/jquery.slimScroll.min'
   },
   shim: { //引入没有使用requirejs模块写法的类库。backbone依赖underscore
     'underscore': {
@@ -30,6 +31,9 @@ require.config({
     },
     'bootstrap': {
       deps: ['jquery']
+    },
+    'slimScroll': {
+      deps: ['jquery']
     }
   }
 });
@@ -37,7 +41,8 @@ require.config({
 require([
   'marionette', 
   'app',
-  'bootstrap'
+  'bootstrap',
+  'slimScroll'
 ], function(Marionette, App) {
   App.start();
 });

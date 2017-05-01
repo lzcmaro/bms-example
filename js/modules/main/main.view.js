@@ -1,4 +1,4 @@
-define(['jquery', 'underscore', 'backbone', 'marionette', 'text!modules/home/main.html'], 
+define(['jquery', 'underscore', 'backbone', 'marionette', 'text!modules/main/main.html'], 
   function($, _, Backbone, Marionette, mainTemplate) {
     return Marionette.View.extend({
       template: mainTemplate,
