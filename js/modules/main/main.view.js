@@ -3,7 +3,7 @@ define(['jquery', 'underscore', 'backbone', 'marionette', 'text!modules/main/mai
     return Marionette.View.extend({
       template: mainTemplate,
       className: 'content-wrapper', // AdminLTE 约定的class
-      ui: {
+      regions: {
         header: '.content-header',
         content: '.content'
       },
@@ -12,9 +12,6 @@ define(['jquery', 'underscore', 'backbone', 'marionette', 'text!modules/main/mai
       },
       onRender() {
         console.log('MainView is rendered.')
-      },
-      render() {
-        
       }
     })
   })

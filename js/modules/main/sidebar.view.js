@@ -228,7 +228,7 @@ define([
     forward: function(url) {
       console.log('forward:', url)
       // 这里不作跳转处理，只把事件trigger出去
-      this.channel.trigger('forward', url)
+      this.channel.trigger('forward', url.replace(/^#/, ''))
     }
   });
 

@@ -4,10 +4,10 @@ define([
   'backbone', 
   'marionette', 
   'app.layout', 
-  'app.model',
-  'app.controller', 
+  'app.model', 
   'app.router',
   'config',
+  'common',
   'modules/main/header.view', 
   'modules/main/sidebar.view', 
   'modules/main/main.view'
@@ -18,9 +18,9 @@ define([
   Marionette, 
   LayoutView, 
   AppModel, 
-  AppCtrl, 
   AppRouter, 
   Config, 
+  Common,
   HeaderView, 
   SidebarView, 
   MainView
@@ -45,7 +45,7 @@ define([
       this.root.showChildView('main', new MainView());
 
       // 初始化router
-      this.router = new AppRouter({controller: new AppCtrl()});
+      // this.router = new AppRouter();
 
     },
     onStart: function() {
@@ -53,9 +53,67 @@ define([
       var that = this;
       // 加载用户信息以及系统菜单列表数据
       this.model.fetch().done(function() {
+        // 根据菜单列表数据初始化路由及控制器
+        that.initAppRoutes.call(that);
         // 监听路由变化
         Backbone.history.start();
       });
+    },
+    /**
+     * 根据系统菜单数据，动态加载路由
+     */
+    initAppRoutes: function() {
+      var __routes = this.getAppRoutes();
+      var routes = {};
+
+      // 设置路由map
+      _.each(__routes, function(value, key){
+        routes[value.route] = value.route;
+      });
+
+      // 初始化Router
+      this.router = new AppRouter({routes: routes});
+    },
+    /**
+     * 获取路由数据（根据系统菜单生成）
+     * @return {Object} 返回一个map数据，key为路由地址，value包括route, title
+     */
+    getAppRoutes: function() {
+      var routeMap = {}, menuList = this.model.get('menuList').toJSON(), loop;
+
+      // 已经存在routeMap时，直接返回this.routeMap
+      if (this.routeMap) return this.routeMap;
+
+      // 菜单数据为空时，直接返回空对象
+      if (!menuList || menuList.length <= 0) return {};
+
+      loop = function(list) {
+        if (!list || list.length <= 0) return [];
+
+        var route;
+
+        _.each(list, function(item){
+          route = item.url;
+
+          if (item.type !== 'section' && route && route !== '#' && route !== 'javascript:;') {
+            // 截取首字符'#'
+            route = route.replace(/^#/, '');
+            routeMap[route] = {
+              title: item.label,
+              route: route
+            };
+          }
+
+          if (item.children && item.children.length) {
+            loop(item.children)
+          }
+        });
+      };
+
+      loop(menuList);
+
+      return (this.routeMap = routeMap);
+
     }
   });
 
