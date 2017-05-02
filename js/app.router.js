@@ -13,19 +13,43 @@ define(['underscore', 'marionette'], function(_, Marionette) {
     },
     onRoute: function(name, path, args) {
       var that = this;
-      // Controller.js 的实际路径（按约定）
-      var controllerPath = 'js/modules/' + name + '/' + name + '.controller.js';
+      var controllerPath = this.getControllerPath(name);
+      
 
       // 这里加载实际的Controller，并且调用其route()方法
       // 如果controller.js不存在，require会报错，但不影响后面的执行。
       require([controllerPath], function(controller) { 
         if (that.currentController && that.currentController !== controller) {
+          // 调用原来的controller.onRouteChange()方法，通知其路由发生了变化
           that.currentController.onRouteChange && that.currentController.onRouteChange(name);
         }
 
         that.currentController = controller;
-        controller.route(args);
+        // route为约定的方法，路由变化后的逻辑处理Action
+        controller.route && controller.route(args);
       }); 
+    },
+    /**
+     * 根据当前路由获取它的ControllerPath
+     * 路由与模块对应的约定：js/modules/module1[/module2]/route.controller.js
+     * @param  {String} route 路由
+     * @return {String}       返回Controller.js的实际路径
+     */
+    getControllerPath(route) {
+      if (!route) return;
+
+      var paths = route.split('/'), modulePath, controllerName;
+      
+      if (paths.length > 1) { // 多级路由
+        // 最后一个为controllerName
+        controllerName = paths.pop();
+        // 剩下的组合为模块的路径
+        modulePath = paths.join('/');
+      } else { // 单级路由
+        modulePath = controllerName = route;
+      }
+
+      return 'js/modules/' + modulePath + '/' + controllerName + '.controller.js';
     }
   });
 

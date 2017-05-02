@@ -22,7 +22,8 @@
           "children": [
             {
               "id": "100201",
-              "label": "贷款信息查询"
+              "label": "贷款信息查询",
+              "url": "loan/loan-search"
             },
             {
               "id": "100202",
