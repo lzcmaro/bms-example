@@ -128,6 +128,8 @@ define([
 
         // 销毁main-content视图，避免当前路由没有实际controller时，还是显示原来的main-content视图
         App.root.detachChildView('main-content');
+
+        // TODO：首次进入页面时，通知SidebarView选中菜单项
         
       });
     },

@@ -1,5 +1,29 @@
 <script type="text/template">
-  <div>
-    UserView
-  </div>
+  
+  <div class="box">
+    <div class="box-body">
+      <form class="form form-inline">
+        <div class="form-group">
+          <label>名称：</label>
+          <input class="form-control" type="text" name="name">
+        </div>
+        <div class="form-group">
+          <label>电话号码：</label>
+          <input class="form-control" type="text" name="tel">
+        </div>
+        <div class="form-group">
+          <label>创建时间：</label>
+          <input class="form-control" type="text" name="beginDate"> - 
+          <input class="form-control" type="text" name="endDate">
+        </div>
+
+        <div class="form-actions">
+          <button class="btn btn-primary">查询</button>
+          <button class="btn btn-default">重置条件</button>
+        </div>
+      </form>
+
+      <table id="datagrid" class="easyui-datagrid"></table>
+    </div><!-- /.box-body -->
+  </div><!-- /.box -->
 </script>

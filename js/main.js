@@ -12,29 +12,30 @@ require.config({
     text: 'lib/text/text.min', //用于requirejs导入html类型的依赖
     moment: 'lib/moment/moment.min',
     momentLocale: 'lib/moment/locale/zh-cn',
-    slimScroll: 'lib/slimScroll/jquery.slimScroll.min'
+    slimScroll: 'lib/slimScroll/jquery.slimScroll.min',
+    easyui: 'lib/jquery-easyui-1.5.2/jquery.easyui.min',
+    easyuiLocale: 'lib/jquery-easyui-1.5.2/locale/easyui-lang-zh_CN'
   },
   shim: { //引入没有使用requirejs模块写法的类库。backbone依赖underscore
-    'underscore': {
+    underscore: {
       exports: '_'
     },
-    'jquery': {
+    jquery: {
       exports: '$'
     },
-    'backbone': {
+    backbone: {
       deps: ['underscore', 'jquery'],
       exports: 'Backbone'
     },
-    'marionette': {
+    marionette: {
       deps: ['backbone', 'backbone.radio'],
       exports: 'Marionette'
     },
-    'bootstrap': {
-      deps: ['jquery']
-    },
-    'slimScroll': {
-      deps: ['jquery']
-    }
+    bootstrap: ['jquery'],
+    slimScroll: ['jquery'],
+    momentLocale: ['moment'],
+    easyui: ['jquery'],
+    easyuiLocale: ['easyui']
   }
 });
 
@@ -42,7 +43,8 @@ require([
   'marionette', 
   'app',
   'bootstrap',
-  'slimScroll'
+  'slimScroll',
+  'easyuiLocale'
 ], function(Marionette, App) {
   App.start();
 });
