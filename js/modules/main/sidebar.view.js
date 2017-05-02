@@ -10,8 +10,7 @@ define([
   var SectionNode = Marionette.View.extend({
     template: '<script type="text/tempate"><%=data.label%></script>',
     tagName: 'li',
-    className: 'header',
-    replaceElement: true
+    className: 'header'
   })
 
   var TreeNode = Marionette.View.extend({
@@ -48,10 +47,7 @@ define([
     }
   });
 
-  /**
-   * 由于AdminLTE的sidebar-menu不是标准的tree结构，为方便模板处理，
-   * 这里对数据做清洗，把数据组装成合适的列表数据
-   */
+  
   var TreeView = Marionette.CollectionView.extend({
     tagName: 'ul',
     className: 'treeview-menu',
@@ -62,6 +58,10 @@ define([
     collectionEvents: {
       update: 'filterDatas'
     },
+    /**
+     * 由于AdminLTE的sidebar-menu不是标准的tree结构，为方便模板处理，
+     * 这里对数据做清洗，把数据组装成合适的列表数据
+     */
     filterDatas: function() {
       var treeDatas = this.collection.toJSON(), list = [], tmp;
       if (!treeDatas.length) return;
@@ -153,7 +153,8 @@ define([
       }
     },
     onMenuClick: function(e) {
-      var $target = $(e.currentTarget),
+      var that = this,
+        $target = $(e.currentTarget),
         $item = $target.parent('li'),
         $parent = $item.closest('ul'),
         $wrap = $item.closest('ul.sidebar-menu'),
@@ -161,8 +162,7 @@ define([
         hasChild = $next.length > 0,
         animationSpeed = 500,
         activeCls = 'active',
-        collapsed = $('body').hasClass('sidebar-collapse'),
-        href = $target.attr('data-url') || '';
+        collapsed = $('body').hasClass('sidebar-collapse');
 
       if (collapsed) { // sidebar收缩状态下
 
@@ -170,14 +170,12 @@ define([
           if (hasChild) {
             // TODO: 多级菜单时，这里需要展开、收缩
           } else {
-            this.forward(href);
             // 移除所有li的active样式
             $wrap.find('li.active').removeClass(activeCls);
             // 给当前li以及所有的上级li.treeview都添加active样式
             $item.addClass(activeCls).parents('li.treeview').addClass(activeCls);
           }          
         } else if($parent.is('.sidebar-menu') && !hasChild) { // 点击的是一级菜单，且没有子菜单时，才切换样式
-          this.forward(href);
           // 移除所有li的active样式
           $wrap.find('li.active').removeClass(activeCls);
           // 给当前li添加active样式
@@ -190,6 +188,7 @@ define([
           if ($item.hasClass(activeCls)) {
             $next.slideUp(animationSpeed, function() {
               //Fix the layout in case the sidebar stretches over the height of the window      
+              that.fixSidebar()
             });
             // 收缩时，不需要把当前已激活的子项设为未激活
             // $item.find('li.active').removeClass(activeCls);
@@ -200,6 +199,7 @@ define([
             // 展开其子菜单
             $next.slideDown(animationSpeed, function() {
               //Fix the layout in case the sidebar stretches over the height of the window
+              that.fixSidebar()
             });
             // 只移除其同级li的active样式，因为其子菜单项可能已选中
             $item.siblings('li').removeClass(activeCls);
@@ -211,24 +211,18 @@ define([
             $next = $wrap.find('> li.active > a').next();
             $next.slideUp(animationSpeed, function() {
               //Fix the layout in case the sidebar stretches over the height of the window
+              that.fixSidebar()
             });           
           }
 
           // 移除所有li的active样式
           $wrap.find('li.active').removeClass(activeCls);
           // 给当前li以及所有的上级li.treeview都添加active样式
-          $item.addClass(activeCls).parents('li.treeview').addClass(activeCls);
-
-          this.forward(href);          
+          $item.addClass(activeCls).parents('li.treeview').addClass(activeCls);         
         }
 
       }
 
-    },
-    forward: function(url) {
-      console.log('forward:', url)
-      // 这里不作跳转处理，只把事件trigger出去
-      this.channel.trigger('forward', url)
     }
   });
 
