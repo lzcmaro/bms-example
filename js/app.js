@@ -138,6 +138,7 @@ define([
       var $body = $('body');
       var collapsed = $body.hasClass('sidebar-collapse');
 
+      // 切换sidebar样式
       $('body').toggleClass('sidebar-collapse', !collapsed);
       // 通知sidebar-view，告之当前sidebar切换了显示状态
       App.sidebarChannel.trigger('toggle-sidebar', !collapsed)
@@ -156,6 +157,33 @@ define([
       // TODO: 在主视图添加导航面包屑？创建新的tab页？
     }
   });
+
+
+  /**
+   * 重写Marionette.View.prototype.serializeData
+   * 如果数据为model，把它放到data中，避免在模板中引用变量时出现未定义的错误
+   */
+  Marionette.View.prototype.serializeData = function() {
+    if (!this.model && !this.collection) {
+      return {};
+    }
+
+    // If we have a model, we serialize that
+    if (this.model) {
+      // 避免在模板中使用变量时出现未定义的错误
+      // 这里把model放到data中
+      return {
+        data: this.serializeModel()
+      }
+    }
+
+    // Otherwise, we serialize the collection,
+    // making it available under the `items` property
+    return {
+      items: this.serializeCollection()
+    };
+  
+  }
 
   return App;
 });

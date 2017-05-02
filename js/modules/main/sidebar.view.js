@@ -8,7 +8,7 @@ define([
   'config'
 ], function($, _, Backbone, Marionette, sidebarTemplate, menuItemTemplate, Config) {
   var SectionNode = Marionette.View.extend({
-    template: '<script type="text/tempate"><%=label%></script>',
+    template: '<script type="text/tempate"><%=data.label%></script>',
     tagName: 'li',
     className: 'header',
     replaceElement: true
@@ -162,7 +162,7 @@ define([
         animationSpeed = 500,
         activeCls = 'active',
         collapsed = $('body').hasClass('sidebar-collapse'),
-        href = $target.attr('href');
+        href = $target.attr('data-url') || '';
 
       if (collapsed) { // sidebar收缩状态下
 
@@ -228,7 +228,7 @@ define([
     forward: function(url) {
       console.log('forward:', url)
       // 这里不作跳转处理，只把事件trigger出去
-      this.channel.trigger('forward', url.replace(/^#/, ''))
+      this.channel.trigger('forward', url)
     }
   });
 
