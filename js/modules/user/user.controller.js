@@ -15,8 +15,8 @@ define([
       App.renderMainContent(new UserView({model: new UserModel()}));
     },
     /**
-     * 路由跳转前的回调
-     * @param  {String} action 将要跳转至的路由的Action名称
+     * 路由跳转后的回调
+     * @param  {String} action 跳至新的路由的Action名称
      */
     onRouteChange: function(action) {
       console.log('user.onRouteChange', action)
