@@ -3,7 +3,7 @@ var jsonServer = require('json-server')
 var server = jsonServer.create()
 var router = jsonServer.router(path.join(__dirname, 'db.json'))
 var middlewares = jsonServer.defaults({static: __dirname})
-var config = require('./js/config')
+var common = require('./js/common/common')
 
 // Set default middlewares (logger, static, cors and no-cache)
 server.use(middlewares)
@@ -25,7 +25,7 @@ server.use(jsonServer.bodyParser)
 // })
 
 // Use default router
-server.use(config.prefix, router)
+server.use(common.prefix, router)
 
 // Startup
 server.listen(3000, function() {

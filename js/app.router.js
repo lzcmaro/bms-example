@@ -8,7 +8,7 @@ define(['underscore', 'marionette'], function(_, Marionette) {
    */
   var AppRouter = Marionette.AppRouter.extend({
      initialize: function(options) {
-      console.log('App.Router is initialized.');
+      console.log('AppRouter initialize.');
       this.routes = options ? options.routes : {};
     },
     onRoute: function(name, path, args) {

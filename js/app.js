@@ -6,7 +6,6 @@ define([
   'app.layout', 
   'app.model', 
   'app.router',
-  'config',
   'common',
   'modules/main/header.view', 
   'modules/main/sidebar.view', 
@@ -20,7 +19,6 @@ define([
   LayoutView, 
   AppModel, 
   AppRouter, 
-  Config, 
   Common,
   HeaderView, 
   SidebarView, 
@@ -31,11 +29,11 @@ define([
 
   var App = Marionette.Application.extend({
     initialize: function(options) {
-      console.log('App initialized', options);
+      console.log('App initialize.', options);
       // TODO: 登录校验   
     },
     onBeforeStart: function() {
-      console.log('App before start.');
+      console.log('App before:start.');
 
       // 注册layoutView
       this.root = new LayoutView();
@@ -45,9 +43,9 @@ define([
       this.root.showChildView('header', new HeaderView({model: this.model.get('account')}));
       this.root.showChildView('sidebar', new SidebarView({collection: this.model.get('menuList')}));
  
-      this.headerChannel = Backbone.Radio.channel(Config.channel.header);
-      this.sidebarChannel = Backbone.Radio.channel(Config.channel.sidebar);
-      // this.mainChannel = Backbone.Radio.channel(Config.channel.main);
+      this.headerChannel = Backbone.Radio.channel(Common.channel.header);
+      this.sidebarChannel = Backbone.Radio.channel(Common.channel.sidebar);
+      // this.mainChannel = Backbone.Radio.channel(Common.channel.main);
  
       /**
        * view与view间的通信通过App来调度（统一使用Application.vent事件聚合器）
@@ -73,12 +71,13 @@ define([
       });
     },
     onStart: function() {
-      console.log('App started.');
+      console.log('App start.');
       var that = this;
       // 加载用户信息以及系统菜单列表数据
       this.model.fetch().done(function() {
         // 根据菜单列表数据初始化路由及控制器
         that.initAppRouter.call(that);
+        that.listenAppRouter.call(that);
         // 监听路由变化
         Backbone.history.start();
       });
@@ -97,16 +96,18 @@ define([
 
       // 初始化Router
       this.router = new AppRouter({routes: routes});
+    },
+    /**
+     * 监听AppRouter.route事件
+     * 在route变化后，更新MainView的header（后面可考虑添加导航面包屑，或者新增tabs页）
+     * @param  {String} route  路由地址
+     * @param  {Array}  args   args[0]为location.search，其它值暂未知
+     */
+    listenAppRouter: function() {
+      if (!this.router) return;
 
-      /**
-       * 监听router.route事件
-       * 在route变化后，更新MainView的header（后面可考虑添加导航面包屑，或者新增tabs页）
-       * @param  {String} route  路由地址
-       * @param  {Array}  args   args[0]为location.search，其它值暂未知
-       */
       this.router.on('route', function(route, args) {
-        console.log('AppRouter.onRoute', route, args);
-        // 由于当前JS有App的定义，为避免出错，这里使用window.App
+        console.log('AppRouter.onRoute: ', route, args);
         var App = window.App;
         var routeData = App.routeMap[route];
         var mainHeaderView;
@@ -186,35 +187,9 @@ define([
    * @param {Marionette.View} view Marionette.View的实例对象
    */
   App.prototype.renderMainContent = function(view) {
+    // TODO: main-content 视图更新后，用slimScroll插件来做内容滚动处理？
     this.root.showChildView('main-content', view);
   }
-
-
-  /**
-   * 重写Marionette.View.prototype.serializeData
-   * 如果数据为model，把它放到data中，避免在模板中引用变量时出现未定义的错误
-   */
-  Marionette.View.prototype.serializeData = function() {
-    if (!this.model && !this.collection) {
-      return {};
-    }
-
-    // If we have a model, we serialize that
-    if (this.model) {
-      // 避免在模板中使用变量时出现未定义的错误
-      // 这里把model放到data中
-      return {
-        data: this.serializeModel()
-      }
-    }
-
-    // Otherwise, we serialize the collection,
-    // making it available under the `items` property
-    return {
-      items: this.serializeCollection()
-    };
-  
-  };
 
 
   // 实例化Application，并设值到window，便于后面使用

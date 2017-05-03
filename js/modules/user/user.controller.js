@@ -1,21 +1,18 @@
 define([
   'marionette',
   'modules/user/user.view',
-  'modules/user/user.collection'
-], function(Marionette, UserView, UserCollection) {
+  'modules/user/user.model'
+], function(Marionette, UserView, UserModel) {
   var Controller = Marionette.Object.extend({
     initialize: function(options) {
-      console.log('UserController is initialized.');
+      console.log('UserController initialize.');
     },
     /**
      * args[0] location.search
      */
     route: function(args) {
-      var collection = new UserCollection();
       // 调用App.renderMainContent()渲染UserView
-      App.renderMainContent(new UserView({collection: collection}));
-      // 加载用户列表数据
-      collection.fetch();
+      App.renderMainContent(new UserView({model: new UserModel()}));
     },
     /**
      * 路由跳转前的回调

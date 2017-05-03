@@ -5,8 +5,8 @@ define([
   'marionette', 
   'text!modules/main/sidebar.html',
   'text!modules/main/menu-item.html',
-  'config'
-], function($, _, Backbone, Marionette, sidebarTemplate, menuItemTemplate, Config) {
+  'common'
+], function($, _, Backbone, Marionette, sidebarTemplate, menuItemTemplate, Common) {
   var SectionNode = Marionette.View.extend({
     template: '<script type="text/tempate"><%=data.label%></script>',
     tagName: 'li',
@@ -112,8 +112,8 @@ define([
       update: 'onCollectionUpdate'
     },
     initialize: function(options) {
-      console.log('SidebarView is initialized.');
-      this.channel = Backbone.Radio.channel(Config.channel.sidebar);
+      console.log('SidebarView initialize.');
+      this.channel = Backbone.Radio.channel(Common.channel.sidebar);
 
       // 切换sidebar状态后，重新fixSidebar
       this.channel.on('toggle-sidebar', this.fixSidebar.bind(this))

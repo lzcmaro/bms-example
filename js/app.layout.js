@@ -11,7 +11,7 @@ define(['marionette'], function(Marionette) {
         header: '#header',
         sidebar: '#sidebar',
         'main-header': '#main .content-header',
-        'main-content': '#main .content'
+        'main-content': '#main .content .box-body'
       }
     })
 });

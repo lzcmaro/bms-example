@@ -2,8 +2,8 @@ define([
   'jquery',
   'underscore',
   'backbone', 
-  'config'
-], function($, _, Backbone, Config) { 
+  'common'
+], function($, _, Backbone, Common) { 
   /**
    * 为方便在header-view, sidebar-view中绑定对应的model, collection
    * 这里的account, menuList设为Backbone.Model, Backbone.Collection类型
@@ -11,7 +11,7 @@ define([
   
   // 登录用户Model
   var Account = Backbone.Model.extend({
-    url: Config.prefix + 'account',
+    url: Common.prefix + 'account',
     /**
      * TODO: 登出
      */
@@ -23,7 +23,7 @@ define([
 
   // 菜单列表Collection
   var MenuList = Backbone.Collection.extend({
-    url: Config.prefix + 'menus',
+    url: Common.prefix + 'menus',
     model: Menu
   });
 
@@ -41,7 +41,7 @@ define([
     
       return $.when(
         $.ajax({
-          url: Config.prefix + 'account',
+          url: Common.prefix + 'account',
           method: 'GET'
         })
         .done(function(resp) {
@@ -49,7 +49,7 @@ define([
         }),
 
         $.ajax({
-          url: Config.prefix + 'menus',
+          url: Common.prefix + 'menus',
           method: 'GET'
         })
         .done(function(resp) {

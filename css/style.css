@@ -3,7 +3,6 @@
  * ----------------------
  */
 .btn {
-  min-width: 60px;
   border-radius: 0;
   border-width: 1px;
   -webkit-box-shadow: none;
@@ -13,10 +12,32 @@
 
 
 
+/**
+ * Override Easyui styles
+ * ----------------------
+ */
+
+/**
+ * Datagrid
+ */
+.datagrid-header-row, .datagrid-row {
+  height: 28px;
+}
+.datagrid-row-selected {
+  background: #ffe48d;
+  color: #000;
+}
+.datagrid-mask-msg {
+  line-height: 1.5 !important;
+  background-position: 8px;
+}
+
+
+
 #container, 
 #main {
   height: 100%;
-  overflow: hidden;
+  // overflow: hidden;
 }
 
 /**
@@ -34,12 +55,13 @@
  * Form
  * ----------------------
  */
-.form {
-  margin-bottom: 20px;
-}
+.form {}
 .form .form-actions {
   margin-top: 15px;
 }
 .form .form-actions .btn + .btn {
   margin-left: 10px;
+}
+.form + .datagrid-wrapper {
+  margin-top: 20px;
 }

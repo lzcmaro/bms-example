@@ -4,8 +4,8 @@ define([
   'backbone', 
   'marionette', 
   'text!modules/main/header.html',
-  'config'
-], function($, _, Backbone, Marionette, headerTemplate, Config) {
+  'common'
+], function($, _, Backbone, Marionette, headerTemplate, Common) {
   return Marionette.View.extend({
     template: headerTemplate,
     className: 'main-header', // AdminLTE 约定的class
@@ -18,8 +18,8 @@ define([
       change: 'render' // this.model变化时，重新render
     },
     initialize: function(options) {
-      console.log('HeaderView is initialized.');
-      this.channel = Backbone.Radio.channel(Config.channel.header);
+      console.log('HeaderView initialize.');
+      this.channel = Backbone.Radio.channel(Common.channel.header);
     },
     onRender: function() {
       console.log('HeaderView is rendered.')
