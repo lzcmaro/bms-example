@@ -3,6 +3,8 @@ define([
   'modules/{{module-path}}/{{module-name}}.view',
   'modules/{{module-path}}/{{module-name}}.model'
 ], function(Marionette, View, Model) {
+  'use strict';
+
   var Controller = Marionette.Object.extend({
     initialize: function(options) {
       // Do something
