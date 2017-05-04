@@ -11,7 +11,7 @@ define([
   
   // 登录用户Model
   var Account = Backbone.Model.extend({
-    url: Common.prefix + 'account',
+    url: '/account',
     /**
      * TODO: 登出
      */
@@ -23,7 +23,7 @@ define([
 
   // 菜单列表Collection
   var MenuList = Backbone.Collection.extend({
-    url: Common.prefix + 'menus',
+    url: '/menus',
     model: Menu
   });
 
@@ -41,15 +41,19 @@ define([
     
       return $.when(
         $.ajax({
-          url: Common.prefix + 'account',
-          method: 'GET'
-        })
-        .done(function(resp) {
-          that.get('account').set(resp)
+          url: '/account',
+          method: 'GET',
+          success: function(resp) {
+            console.log('success', this, resp)
+            that.get('account').set(resp)
+          }
         }),
+        // .done(function(resp) {
+        //   that.get('account').set(resp)
+        // }),
 
         $.ajax({
-          url: Common.prefix + 'menus',
+          url: '/menus',
           method: 'GET'
         })
         .done(function(resp) {

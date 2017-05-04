@@ -23,7 +23,8 @@ require.config({
     // easyui: 'lib/jquery-easyui-1.5.2/jquery.easyui.min',
     easyuiLocale: 'lib/jquery-easyui-1.5.2/locale/easyui-lang-zh_CN',
     common: 'common/common',
-    'marionette.ext': 'common/marionette.ext'
+    'marionette.ext': 'common/marionette.ext',
+    'jquery.ext': 'common/jquery.ext'
   },
   shim: { //引入没有使用requirejs模块写法的类库。backbone依赖underscore
     underscore: {
@@ -57,6 +58,7 @@ require.config({
 
 require([
   'app',
+  'jquery.ext',
   'marionette.ext',
   'bootstrap',
   'slimScroll',

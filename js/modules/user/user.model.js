@@ -4,7 +4,7 @@ define(['backbone', 'common'], function(Backbone, Common) {
    */
   return Backbone.Model.extend({
     urlRoot: function() {
-      return Common.prefix + 'users'
+      return '/users'
     },
     defaults: {
       total: 0, // 数据总行数

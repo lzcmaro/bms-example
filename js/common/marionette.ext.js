@@ -4,6 +4,8 @@
   typeof define === 'function' && define.amd ? define(['jquery', 'underscore', 'marionette'], factory) :
   factory(global.jQuery, global._, global.Marionette)
 }(this, function ($, _, Mn) {
+  'use strict';
+
   /**
    * jquery.easyui datagrid 的默认参数配置
    */
@@ -50,16 +52,18 @@
       // 注意的是，表格数据并没有显示在this.$el上面，所以不能在this.events中处理
       this.$el.parent().on('click', '.link', _.bind(this.onLinkClick, this));
     },
-    onLinkClick: function(e) { 
-      console.log('onLinkClick', e.currentTarget);
-      var $target = $(e.currentTarget);
+    onLinkClick: function(evt) { 
+      console.log('onLinkClick', evt.currentTarget);
+      var $target = $(evt.currentTarget);
       var field = $target.attr('field');
       var index = $target.index();
       var buttonOptions = (this.gridColumnButtons[field] || {})[index] || {};
       var handler = buttonOptions.handler;
       var $grid, gridData, rowData, rowIndex;
 
-      if (!_.isFunction(handler)) return;
+      evt.preventDefault();
+
+      if (!_.isFunction(handler)) return false;
 
       if (_.isFunction(handler)) {
         $grid = this.getGridEl();
@@ -67,9 +71,34 @@
         rowIndex = $target.closest('tr').attr('datagrid-row-index');
         rowData = gridData[rowIndex];
 
-        handler(rowData, rowIndex);
+        handler(rowData, rowIndex, evt);
       }
     },
+    /**
+     * 获取easyui datagrid 的配置信息
+     * 这里对传递过来的 gridOptions.columns 做了扩展
+     * 可快速配置操作列的按钮显示与事件绑定（不需使用原formatter来处理）
+     * TODO: 图标按钮，按钮样式，按钮的其它事件配置
+     * 示例如下：
+     * [[
+     *   {
+     *     field: '_opt', 
+     *     title: '操作', 
+     *     align: 'right',
+     *     buttons: [ // 扩展的属性
+     *       {
+     *         'label': '编辑', // 按钮显示的文本
+     *         'handler': func, // 点击按钮时，触发的事件
+     *         'formatter': func // 如何显示什么按钮文本的事件，其和原easyui datagrid中的formatter一致
+     *       },
+     *       {
+     *         'label': '详情',
+     *         'handler': func
+     *       }
+     *     ]
+     *   }
+     * ]]
+     */
     _getGridOptions: function() {
       var that = this;
       var gridOptions = (this.options || {}).gridOptions || {};

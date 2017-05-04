@@ -4,11 +4,13 @@
   typeof define === 'function' && define.amd ? define(['jquery'], factory) :
   global.Common = factory(global.jQuery)
 }(this, function ($) {
+  'use strict';
+
   var Util = function() {
     /**
      * 与后端接口交互的地址前缀
      */
-    this.prefix = '/api/';
+    this.prefix = '/api';
     /**
      * view之间的通信，基于事件管道Backbone.Radio
      * 这里定义各管道的名称，便于后面获取
