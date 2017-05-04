@@ -1,6 +1,5 @@
 var fs = require('fs');
 var path = require('path');
-var readlineSync = require('readline-sync');
 
 
 function writeFiles(inputPath, outPath, modulePath, moduleName) {
@@ -15,21 +14,16 @@ function writeFiles(inputPath, outPath, modulePath, moduleName) {
       source = source.replace(/\{\{module\-path\}\}/g, modulePath).replace(/\{\{module\-name\}\}/g, moduleName);
       fs.writeFileSync(outPath + moduleName + ext, source, {encoding: 'utf8'});
     }
-  });
-
-  
+  });  
 }
 
-(function() {
+function createModuleFiles(input) {
+  if (!input) return;
+
   // modules 的根目录
   var basePath = path.resolve(__dirname, '../js/modules') + '/';
   var examplePath = path.resolve(__dirname, './example') + '/';
   var input, modulePath, moduleBasePath, moduleName, source;
-
-  // Wait for user's response.
-  input = readlineSync.question('请输入模块的路由地址：');
-
-  if (!input) return;
 
   // 避免在使用String.split()时，返回的数组，最后一个为空字符
   input = input.replace(/\/$/, '').split('/');
@@ -55,8 +49,28 @@ function writeFiles(inputPath, outPath, modulePath, moduleName) {
     }
   });
 
-
   writeFiles(examplePath, moduleBasePath, modulePath, moduleName);
+
+  console.log('Build end.');
+}
+
+(function() {
+  var readline = require('readline'); 
+  var rl = readline.createInterface({ 
+    input: process.stdin, 
+    output: process.stdout 
+  });
+
+  console.log('Build start...');
+
+  rl.question('请输入模块的路由地址：', function(input) {
+    createModuleFiles(input);
+    rl.close();
+  });
+
+  rl.on('close',function(){
+    process.exit(0);
+  });
 
 })();
 
