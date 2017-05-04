@@ -28,9 +28,16 @@ define([
         // 由于DatagridView做了默认配置，一般情况，只需传递columns即可
         gridOptions: {
           columns:[[
-            {field: 'name', title: '名称', width: 100},
-            {field: 'tel', title: '电话号码', width: 100},
-            {field: 'createDate', title: '创建时间', align: 'right', width: 100}
+            {field: 'name', title: '名称', width: 300},
+            {field: 'tel', title: '电话号码', width: 300},
+            {field: 'createDate', title: '创建时间', align: 'right', width: 300},
+            {field: '_opt', title: '操作', align: 'center', width: 180, buttons: [
+              {label: '编辑', handler: _.bind(this.doEdit, this)},
+              {label: '详情', handler: _.bind(this.showDetail, this)},
+              {handler: _.bind(this.doEnableOrDisable, this), formatter: function(value, row, index) {
+                return value == 1 ? '停用' : '启用'
+              }}
+            ]}
           ]]
         }
       });
@@ -51,6 +58,15 @@ define([
 
       // Prevent default (form submit)
       return false;
+    },
+    showDetail: function(rowData, rowIndex) {
+      console.log('showDetail', rowData)
+    },
+    doEdit: function(rowData, rowIndex) {
+      console.log('doEdit', rowData)
+    },
+    doEnableOrDisable: function(rowData, rowIndex) {
+      console.log('doEnableOrDisable', rowData)
     }
   })
 });

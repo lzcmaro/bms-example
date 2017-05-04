@@ -57,11 +57,27 @@
  */
 .form {}
 .form .form-actions {
-  margin-top: 15px;
+  margin-top: 20px;
 }
 .form .form-actions .btn + .btn {
   margin-left: 10px;
 }
 .form + .datagrid-wrapper {
   margin-top: 20px;
+}
+
+/**
+ * Datagrid
+ * --------------------
+ */
+.datagrid-view .datagrid-btable tbody > tr > td .link {
+  color: #333;
+}
+.datagrid-view .datagrid-btable tbody > tr > td .link:hover,
+.datagrid-view .datagrid-btable tbody > tr > td .link:active,
+.datagrid-view .datagrid-btable tbody > tr > td .link:focus {
+  color: #fc6c21;
+}
+.datagrid-view .datagrid-btable tbody > tr > td .link + .link {
+  margin-left: 10px;
 }

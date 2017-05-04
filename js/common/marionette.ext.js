@@ -27,6 +27,8 @@
     className: 'easyui-datagrid',
     initialize: function(options) {
       console.log('DatagridView initialize.', options);
+      // 用于保存datagrid columns 配置中的buttons对象
+      this.gridColumnButtons = {};
       // model 的数据发生变化时，调用this._refreshView()刷新datagrid视图
       this.listenTo(this.model, "change", this._refreshView);
       
@@ -43,11 +45,76 @@
      * 不然，因为DOM未挂载，会导致datagrid显示空白
      */
     onAttach: function() {
-      var options = this.options || {};
-      // 这里定义了loader，在datagrid请求数据时，将调用我们定义的方法，即这里的this.fetch()
-      var gridOptions = $.extend(defaultGridOptions, {loader: this.fetch.bind(this)}, options.gridOptions);
-      // TODO：操作列封装
-      this.$el.datagrid(gridOptions);
+      this.$el.datagrid(this._getGridOptions());
+      // 给操作按钮.link委派click事件
+      // 注意的是，表格数据并没有显示在this.$el上面，所以不能在this.events中处理
+      this.$el.parent().on('click', '.link', _.bind(this.onLinkClick, this));
+    },
+    onLinkClick: function(e) { 
+      console.log('onLinkClick', e.currentTarget);
+      var $target = $(e.currentTarget);
+      var field = $target.attr('field');
+      var index = $target.index();
+      var buttonOptions = (this.gridColumnButtons[field] || {})[index] || {};
+      var handler = buttonOptions.handler;
+      var $grid, gridData, rowData, rowIndex;
+
+      if (!_.isFunction(handler)) return;
+
+      if (_.isFunction(handler)) {
+        $grid = this.getGridEl();
+        gridData = $grid.datagrid('getData').rows;
+        rowIndex = $target.closest('tr').attr('datagrid-row-index');
+        rowData = gridData[rowIndex];
+
+        handler(rowData, rowIndex);
+      }
+    },
+    _getGridOptions: function() {
+      var that = this;
+      var gridOptions = (this.options || {}).gridOptions || {};
+      var columns = gridOptions.columns;
+      var gridColumnButtons = this.gridColumnButtons;
+
+      if (columns && columns.length) {
+        // easyui datagrid columns 为数组对象
+        // 它的直接子元素也是个数组，可多个，用于配置复杂的、有合并行、列的表格头
+        _.each(columns, function(cols) {
+          _.each(cols, function(field) {
+            if (field.buttons && field.buttons.length) {
+              gridColumnButtons[field.field] = field.buttons;
+              // 把easyui datagrid columns 中的 formatter 绑定到this._fieldFormatter，方便统一处理
+              field.formatter = _.bind(that._fieldFormatter, that, field.field);
+            }
+          });
+        });
+      }
+
+      return $.extend(defaultGridOptions, {loader: _.bind(this.fetch, this)}, gridOptions)
+    },
+    /**
+     * easyui datagrid columns 中的 formatter 回调
+     * @param {String} field 当前column的field标识
+     * @param {String} value 当前column数据，由easyui datagrid返回
+     * @param {Object} row 当前row数据，由easyui datagrid返回
+     * @param {Number} index 当前row的索引，由easyui datagrid返回
+     */
+    _fieldFormatter: function(field, value, row, index) {
+      var buttonOptions = this.gridColumnButtons[field];
+      var className = 'link';
+      var link = '<a class="${className}" href="javascript:;" field="${field}">${label}</a>';
+      var tpl = '';
+      
+      if (!buttonOptions || !buttonOptions.length) return;
+
+      _.each(buttonOptions, function(item) {
+        var label = _.isFunction(item.formatter) ? item.formatter() : item.label || '';
+        tpl += link.replace(/\$\{label\}/g, label || '')
+          .replace(/\$\{className\}/, className)
+          .replace(/\$\{field\}/, field);
+      });
+
+      return tpl;
     },
     _refreshView: function(model) {
       var $grid = this.$el;
@@ -67,28 +134,27 @@
       // 获取jquery.easyui datagrid 缓存起来的options
       var data = $grid.data('datagrid');
       var opts = data ? data.options : {};
-      var queryParams = {};
       
 
-      // 如果当前方法不是从jquery.easyui datagrid 触发，这里把param设置到datagrid queryParams中
-      // 以便在点击分页按钮时，可以带上这些查询参数
-      if (!$.isFunction(success) || !$.isFunction(error)) {
-        $grid.datagrid({ queryParams: param });
+      if (!_.isFunction(success) || !_.isFunction(error)) {
+        // 在外部调用时，把param设置到datagrid queryParams中，以便在点击分页按钮时，可以带上这些查询参数
+        opts.queryParams = param;
+
+        // 在外部调用时，需要带上当前的分页参数（page, rows）
+        if (opts.pagination) {
+          $.extend(param, {
+            page: opts.pageNumber,
+            rows: opts.pageSize
+          })
+        }
       }
 
       // 清空this.model，避免存在脏数据
       this.model.clear({silent: true});
       // 显示loading层
       $grid.datagrid('loading');
-      // fetch 可能是jquery.easyui datagrid的loader触发，也可能是外部调用
-      // 在外部调用时，这里需要带上当前的分页参数（page, rows）
-      if (opts.pagination) {
-        $.extend(queryParams, param, {
-          page: opts.pageNumber,
-          rows: opts.pageSize
-        })
-      }
-      this.model.fetch({data: queryParams});
+      // 调用mode.fetch()拉取数据
+      this.model.fetch({data: param});
     },
     getGridEl: function() {
       return this.$el
