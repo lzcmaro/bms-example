@@ -70,6 +70,16 @@
   background-position: 8px;
 }
 
+/**
+ * Messager
+ */
+.messager-window .messager-button {
+  text-align: right;
+}
+.messager-window .messager-button .l-btn:hover {
+  color: #72afd2;
+}
+
 
 
 #container, 

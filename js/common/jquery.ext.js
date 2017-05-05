@@ -2,7 +2,7 @@
  * 重写jQuery.ajax()
  * 1，补全请求地址
  * 2，添加默认header等配置
- * 3, TODO: 统一处理数据异常
+ * 3, 统一处理数据异常
  */
 (function($) {
   // 备份原来的$.ajax;
@@ -39,14 +39,10 @@
 
 
     var _options = $.extend(true, defaultOptions, options, {
-      error: function(XMLHttpRequest, textStatus, errorThrown) {
-        // Something
-        fn.error.call(this, XMLHttpRequest, textStatus, errorThrown);
-      },
-      success: function(data, textStatus, jqXHR) {
-        // Something
-        fn.success.call(this, data, textStatus, jqXHR);
-      },
+      // 这里把error, success设为空涵数，统一在$.ajax().done().fail()中处理
+      // 避免有些地方使用了$.ajax().done().fail()这样的方式，从而导致没控制到
+      error: noop,
+      success: noop,
       beforeSend: function(XMLHttpRequest) {
         // Something
         fn.beforeSend.call(this, XMLHttpRequest)
@@ -58,7 +54,39 @@
     });
 
     // 调用原来的ajax方法
-    return _ajax(url, _options);
+    return _ajax(url, _options)
+      .done(function(data, textStatus, jqXHR) {
+        // Something
+        fn.success.call(this, data, textStatus, jqXHR);
+      })
+      .fail(function(XMLHttpRequest, textStatus, errorThrown) {
+        var status = XMLHttpRequest.status,
+          defaultMsg = '系统出错了，请稍候重试。', 
+          errorMsg;
+
+        // 异务异常处理
+        // Unauthorized 未登录，没有权限
+        if (status === 401) {
+          return location.href = '/login.html';
+        }
+
+        try {
+          errorMsg = $.parseJSON(XMLHttpRequest.responseText).error || defaultMsg;
+        } catch(e) {
+          errorMsg = defaultMsg;
+        }
+
+        // 其它错误
+        $.alert({
+          title: '错误',
+          msg: errorMsg,
+          icon: 'error'
+        });
+
+        // 这里不在$.alert()的回调中触发，因为如果外边使用的是$.ajax().fail()的方式，
+        // 它的fail()会在$.alert()关闭前先触发，这里保持行为一致
+        fn.error.call(this, XMLHttpRequest, textStatus, errorThrown);
+      });
   };
 })(jQuery);
 
@@ -149,7 +177,7 @@
   
 
   /**
-   * Modal defalt options
+   * Modal default options
    */
   var defaultOptions = {
     show: true, // 初始化时是否显示

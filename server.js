@@ -9,8 +9,8 @@ var common = require('./js/common/common')
 server.use(middlewares)
 
 // Add custom routes before JSON Server router
-// server.get('/echo', (req, res) => {
-//   res.jsonp(req.query)
+// server.get('/api/account', (req, res) => {
+//   res.send('403', {error: '你被禁止访问。'});
 // })
 
 // To handle POST, PUT and PATCH you need to use a body-parser

@@ -42,15 +42,11 @@ define([
       return $.when(
         $.ajax({
           url: '/account',
-          method: 'GET',
-          success: function(resp) {
-            console.log('success', this, resp)
-            that.get('account').set(resp)
-          }
+          method: 'GET'
+        })
+        .done(function(resp) {
+          that.get('account').set(resp)
         }),
-        // .done(function(resp) {
-        //   that.get('account').set(resp)
-        // }),
 
         $.ajax({
           url: '/menus',
