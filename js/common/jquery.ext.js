@@ -1,8 +1,3 @@
-/**
- * 重写jQuery.ajax()
- * 1，补全请求地址
- * 2，添加默认header等配置
- */
 ;(function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined'
     && typeof require === 'function' ? module.exports = factory(require('../lib/jquery/jquery.min'), require('./common')) :
@@ -11,6 +6,13 @@
 }(this, function ($, Common) {
   'use strict';
 
+  /**
+   * 重写jQuery.ajax()
+   * 1，补全请求地址
+   * 2，添加默认header等配置
+   * 3, TODO: 统一处理数据异常
+   */
+  
   // 备份原来的$.ajax;
   var _ajax = $.ajax; 
   // 重写$.ajax
@@ -66,4 +68,5 @@
     // 调用原来的ajax方法
     return _ajax(url, _options);
   };
+  
 }));

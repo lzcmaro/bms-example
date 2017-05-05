@@ -45,7 +45,7 @@ define([
  
       this.headerChannel = Backbone.Radio.channel(Common.channel.header);
       this.sidebarChannel = Backbone.Radio.channel(Common.channel.sidebar);
-      // this.mainChannel = Backbone.Radio.channel(Common.channel.main);
+      this.mainChannel = Backbone.Radio.channel(Common.channel.main);
  
       /**
        * view与view间的通信通过App来调度（统一使用Application.vent事件聚合器）
@@ -58,11 +58,19 @@ define([
         'toggle-sidebar': function() {
           var $body = $('body');
           var collapsed = $body.hasClass('sidebar-collapse');
+          var transEndEventName = Common.getTransEndEventName();
 
+          // 监听sidebar的transitionend事件
+          // 在tarnsform结束后，才通知其它view
+          $('#sidebar .main-sidebar').one(transEndEventName, function(){
+            // 保险起见，这里在动画结束后，延时100毫秒处理
+            setTimeout(function() {
+              window.App.sidebarChannel.trigger('toggle-sidebar', !collapsed);
+              window.App.mainChannel.trigger('toggle-sidebar', !collapsed);
+            }, 100)
+          });
           // 切换sidebar样式
-          $('body').toggleClass('sidebar-collapse', !collapsed);
-          // 通知sidebar-view，告之当前sidebar切换了显示状态
-          window.App.sidebarChannel.trigger('toggle-sidebar', !collapsed)
+          $body.toggleClass('sidebar-collapse', !collapsed);         
         },
         /**
          * TODO: 登出

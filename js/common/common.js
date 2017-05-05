@@ -39,5 +39,25 @@
     return str.replace(/\-(\w)/g, function(all, letter){return letter.toUpperCase()});
   };
 
+  /**
+   * 获取当前浏览器下所支持的TransitionEnd的事件名称
+   */
+  fn.getTransEndEventName = function() {
+    var body = document.body || document.documentElement, 
+      style = body.style,
+      transEndEventNames = {
+        WebkitTransition: 'webkitTransitionEnd',
+        MozTransition   : 'transitionend',
+        OTransition     : 'oTransitionEnd otransitionend',
+        transition      : 'transitionend'
+      };
+
+    for (var name in transEndEventNames) {
+      if (typeof style[name] === "string") {
+        return transEndEventNames[name]
+      }
+    }
+  }
+
   return new Util();
 }));
