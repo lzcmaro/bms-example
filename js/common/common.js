@@ -1,9 +1,9 @@
 ;(function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined'
-    && typeof require === 'function' ? module.exports = factory(require('../lib/jquery/jquery.min')) :
-  typeof define === 'function' && define.amd ? define(['jquery'], factory) :
-  global.Common = factory(global.jQuery)
-}(this, function ($) {
+    && typeof require === 'function' ? module.exports = factory(global) :
+  typeof define === 'function' && define.amd ? define([], factory) :
+  global.Common = factory(global)
+}(typeof window !== "undefined" ? window : this, function (global) {
   'use strict';
 
   var Util = function() {
@@ -57,6 +57,11 @@
         return transEndEventNames[name]
       }
     }
+  }
+
+  // even in AMD
+  if (!global) {
+    window.Common = new Util();
   }
 
   return new Util();

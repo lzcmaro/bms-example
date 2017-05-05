@@ -1,4 +1,41 @@
 /**
+ * Override Bootstrap styles
+ * ----------------------
+ */
+// .modal-dialog {
+//   position: absolute;
+//   margin: 10px auto;
+//   left: 0;
+//   right: 0;
+//   top: 50%;
+// }
+// .modal.in .modal-dialog {
+//   -webkit-transform: translate(0, -50%);
+//       -ms-transform: translate(0, -50%);
+//        -o-transform: translate(0, -50%);
+//           transform: translate(0, -50%);
+// }
+@media (min-width: 768px) {
+  .modal-dialog {
+    margin-top: 150px;
+  }
+
+  .modal-body > dl {
+    margin-bottom: 0;
+  }
+  .dl-horizontal dt {
+    width: 120px;
+  }
+  .dl-horizontal dd {
+    margin-left: 140px;
+  }
+}
+
+
+
+
+
+/**
  * Override AdminLTE styles
  * ----------------------
  */
@@ -9,6 +46,7 @@
      -moz-box-shadow: none;
           box-shadow: none;
 }
+  
 
 
 

@@ -154,6 +154,9 @@
       $grid.datagrid('loaded');
       // 更新数据到datagrid
       $grid.datagrid('loadData', model.toJSON());
+      // 当前页面出现滚动条的话，datagrid的宽度计算有问题，这里resize一下
+      // TODO: 仅需要在第一次加载时才resize
+      this.resize();
     },
     /**
      * 拉取datagrid数据，这里直接调用model.fetch()进行数据拉取

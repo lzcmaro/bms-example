@@ -3,8 +3,10 @@ define([
   'underscore', 
   'backbone', 
   'marionette', 
-  'text!modules/user/user.html'
-], function($, _, Backbone, Marionette, userTemplate) {
+  'text!modules/user/user.html',
+  'modules/user/user-detail.view',
+  'modules/user/user-detail.model'
+], function($, _, Backbone, Marionette, userTemplate, DetailView, DetailModel) {
   return Marionette.View.extend({
     template: userTemplate,
     regions: {
@@ -55,12 +57,13 @@ define([
       };
       // fetch data
       this.gridView.fetch(queryParams);
-
-      // Prevent default (form submit)
-      return false;
     },
     showDetail: function(rowData, rowIndex) {
-      console.log('showDetail', rowData)
+      if (this.detailView) {
+        this.detailView.model.set(rowData)
+      } else {
+        this.detailView = new DetailView({model: new DetailModel(rowData)}).render();
+      }
     },
     doEdit: function(rowData, rowIndex) {
       console.log('doEdit', rowData)

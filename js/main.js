@@ -20,6 +20,16 @@ require.config({
     'easyui-pagination': 'lib/jquery-easyui-1.5.2/plugins/jquery.pagination',
     'easyui-datagrid': 'lib/jquery-easyui-1.5.2/plugins/jquery.datagrid',
     'easyui-treegrid': 'lib/jquery-easyui-1.5.2/plugins/jquery.treegrid',
+
+    'easyui-draggable': 'lib/jquery-easyui-1.5.2/plugins/jquery.draggable',
+    'easyui-droppable': 'lib/jquery-easyui-1.5.2/plugins/jquery.droppable',
+    'easyui-tree': 'lib/jquery-easyui-1.5.2/plugins/jquery.tree',
+
+    'easyui-messager': 'lib/jquery-easyui-1.5.2/plugins/jquery.messager',
+    'easyui-window': 'lib/jquery-easyui-1.5.2/plugins/jquery.window',
+    'easyui-dialog': 'lib/jquery-easyui-1.5.2/plugins/jquery.dialog',
+    'easyui-progressbar': 'lib/jquery-easyui-1.5.2/plugins/jquery.progressbar',
+
     // easyui: 'lib/jquery-easyui-1.5.2/jquery.easyui.min',
     easyuiLocale: 'lib/jquery-easyui-1.5.2/locale/easyui-lang-zh_CN',
     common: 'common/common',
@@ -44,25 +54,42 @@ require.config({
     bootstrap: ['jquery'],
     slimScroll: ['jquery'],
     momentLocale: ['moment'],
+    
     // easyui: ['jquery'],
+    // datagrid
     'easyui-parser': ['jquery'],
     'easyui-panel': ['jquery'],
     'easyui-resizable': ['jquery'],
     'easyui-linkbutton': ['jquery'],
     'easyui-pagination': ['jquery', 'easyui-linkbutton'],
     'easyui-datagrid': ['jquery', 'easyui-parser', 'easyui-panel', 'easyui-resizable', 'easyui-linkbutton', 'easyui-pagination'],
+    
+    // treegrid
     'easyui-treegrid': ['jquery', 'easyui-datagrid'],
-    easyuiLocale: ['easyui-datagrid', 'easyui-treegrid']
+    
+    // tree
+    'easyui-draggable': ['jquery'],
+    'easyui-droppable': ['jquery'],
+    'easyui-tree': ['jquery', 'easyui-draggable', 'easyui-droppable'],
+    
+    // messager
+    'easyui-progressbar': ['jquery'],
+    'easyui-window': ['jquery'],
+    'easyui-dialog': ['jquery', 'easyui-window', 'easyui-linkbutton'],
+    'easyui-messager': ['jquery', 'easyui-dialog', 'easyui-linkbutton', 'easyui-progressbar'],
+    
+    // easyui locale 本地化
+    easyuiLocale: ['jquery', 'easyui-datagrid', 'easyui-treegrid', 'easyui-tree', 'easyui-messager'],
+    
+    'jquery.ext': ['jquery', 'bootstrap', 'easyuiLocale', 'common'],
+    'marionette.ext': ['jquery', 'marionette', 'easyuiLocale'],
+
+    // app 这里把一些插件类的库先加载了，方便后面使用
+    app: ['bootstrap', 'jquery.ext', 'marionette.ext', 'slimScroll']
   }
+
 });
 
-require([
-  'app',
-  'jquery.ext',
-  'marionette.ext',
-  'bootstrap',
-  'slimScroll',
-  'easyuiLocale'
-], function(App) {
+require(['app'], function(App) {
   App.start();
 });

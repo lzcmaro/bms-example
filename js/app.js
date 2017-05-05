@@ -80,15 +80,14 @@ define([
     },
     onStart: function() {
       console.log('App start.');
-      var that = this;
       // 加载用户信息以及系统菜单列表数据
-      this.model.fetch().done(function() {
-        // 根据菜单列表数据初始化路由及控制器
-        that.initAppRouter.call(that);
-        that.listenAppRouter.call(that);
-        // 监听路由变化
-        Backbone.history.start();
-      });
+      this.model.fetch()
+        .done(_.bind(this.initAppRouter, this))
+        .done(_.bind(this.listenAppRouter, this))
+        .done(function() {
+          // 监听路由变化
+          Backbone.history.start()
+        });
     },
     /**
      * 根据系统菜单数据，动态加载路由
