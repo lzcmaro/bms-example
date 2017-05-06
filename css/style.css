@@ -20,7 +20,7 @@
     margin-top: 150px;
   }
 
-  .modal-body > dl {
+  .modal-body dl {
     margin-bottom: 0;
   }
   .dl-horizontal dt {
@@ -110,8 +110,13 @@
 .form .form-actions .btn + .btn {
   margin-left: 10px;
 }
+.form + .panel.datagrid,
 .form + .datagrid-wrapper {
   margin-top: 20px;
+}
+.form.form-horizontal .form-group label.col-sm-2,
+.form.form-horizontal .form-group label.col-sm-3 {
+  padding-right: 0;
 }
 
 /**

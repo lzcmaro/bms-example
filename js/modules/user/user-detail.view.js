@@ -7,29 +7,14 @@ define([
 ], function($, _, Backbone, Marionette, template) {
   'use strict';
 
-  return Marionette.View.extend({
+  return Marionette.ModalView.extend({
     template: template,
-    modelEvents: {
-      change: 'render'
-    },
-    initialize: function(options) {
-      // Do something
-    },
-    onRender: function() {
-      // this.model发生变化时，会重新render，这里把原来的modal删除
-      if (this.$dialog) {
-        this.$dialog.remove()
-      } 
-
-      this.$dialog = $.modal({
-        className: 'dlg-user-detail',
-        title: '用户信息',
-        body: this.$el.html(),
-        buttons: [{
-          text: '确定',
-          handler: 'close'
-        }]
-      });
+    /**
+     * 用于显示弹层的配置，详见jquery.ext.js中$.modal()的定义
+     */
+    modalOptions: {
+      title: '用户信息',
+      className: 'dlg-user-detail'
     }
   })
 });

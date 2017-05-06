@@ -9,11 +9,23 @@ define([
 
   return Marionette.View.extend({
     template: template,
+    ui: {
+      form: 'form',
+      grid: '.datagrid'
+    },
     initialize: function(options) {
       // Do something
     },
     onRender: function() {
-      // Do something
+      this.gridView = new Marionette.DatagridView({
+        el: this.ui.grid,
+        model: this.model,
+        gridOptions: {
+          columns: [[
+            // TODO
+          ]]
+        }
+      }).render();
     }
   })
 });

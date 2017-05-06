@@ -93,7 +93,7 @@
 
 
 /**
- * Alert, Confirm, Prompt, Modal
+ * Tip, Alert, Confirm, Prompt, Modal
  * 由于系统引用了easyui, bootstrap，为方便调用，这里统一提供对外接口（都挂载到jQuery下）
  */
 (function($) {
@@ -103,6 +103,7 @@
 
   /**
    * Easyui messager.alert
+   * ---------------------------------------
    * Parameters:
       title: The title text to be showed on header panel.
       msg: The message text to be showed.
@@ -124,6 +125,7 @@
   $.alert = messager.alert || noop;
   /**
    * Easyui messager.confirm
+   * ---------------------------------------
    * Parameters:
       title: The title text to be showed on header panel.
       msg: The message text to be showed.
@@ -150,6 +152,7 @@
   $.confirm = messager.confirm || noop;
   /**
    * Easyui messager.prompt
+   * ---------------------------------------
    * Parameters:
       title: The title text to be showed on header panel.
       msg: The message text to be showed.
@@ -174,12 +177,27 @@
    */
   $.prompt = messager.prompt || noop;
 
+
+
+
+  /**
+   * Tip 扩展于 bootstrap alert
+   * 由于easyui 已存在 alert，这里把bootstrap alert封装成tip
+   * ---------------------------------------
+   */
+  var tipDefaultOptions = {
+
+  };
+
+  // var 
+
   
 
   /**
-   * Modal default options
+   * Modal 扩展于 bootstrap modal
+   * ---------------------------------------
    */
-  var defaultOptions = {
+  var modalDefaultOptions = {
     show: true, // 初始化时是否显示
     backdrop: true, // 是否显示遮盖层
     keyboard: true, // 是否在按下键盘ESC键时，关闭弹层
@@ -188,7 +206,10 @@
     closeButton: true, // 是否显示Modal header中的关闭按钮
     title: '', // Modal header显示的Title
     body: '', // Modal body显示的内容，可为jquery实例对象或者HTML String
-    buttons: null // Modal footer显示的按钮，如果为空，Modal footer将不显示
+    buttons: [{
+      text: '确定',
+      handler: 'close'
+    }] // Modal footer显示的按钮，如果为空，Modal footer将不显示
     /**
      * buttons：
      *  [{ 
@@ -216,13 +237,15 @@
 
   /**
    * 封装bootstrap modal
-   * @param {Object} options modal配置，见上面的defaultOptions
+   * @param {Object} options modal配置，见上面的modalDefaultOptions
    */
   function modal(options) {
     var $modal = $(tpl),
       $body = $modal.find('.modal-body'),
-      modalOptions = $.extend({}, defaultOptions, options),
+      modalOptions = $.extend({}, modalDefaultOptions, options),
       $header, $footer;
+
+    $body.html(modalOptions.body);
 
     if (modalOptions.header === true) {
       $header = $(headerTpl).insertBefore($body);
@@ -258,9 +281,17 @@
         }
       });
     }
-
-    $body.html(modalOptions.body);
+    
     $modal.appendTo('body').find('.modal-dialog').addClass(modalOptions.className);
+
+    // 重写$modal.hide(), $modal.show()，方便外面使用
+    $modal.show = function() {
+      return $(this).modal('show')
+    }
+    $modal.hide = function() {
+      return $(this).modal('hide')
+    }
+
     
     // 调用jquery.fn.modal弹出modal层，并返回当前modal的jquery对象
     return $modal.modal(modalOptions);

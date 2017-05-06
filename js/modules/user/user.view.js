@@ -5,15 +5,14 @@ define([
   'marionette', 
   'text!modules/user/user.html',
   'modules/user/user-detail.view',
-  'modules/user/user-detail.model'
-], function($, _, Backbone, Marionette, userTemplate, DetailView, DetailModel) {
+  'modules/user/user-edit.view',
+  'modules/user/user.model'
+], function($, _, Backbone, Marionette, userTemplate, DetailView, EditView, UserModel) {
   return Marionette.View.extend({
     template: userTemplate,
-    regions: {
-      'grid': '#datagrid-wrapper'
-    },
     ui: {
-      form: 'form'
+      form: 'form',
+      grid: '.datagrid'
     },
     events: {
       'click .btn-search': 'doSearch'
@@ -23,7 +22,9 @@ define([
     },
     onRender: function() {
       console.log('UserView is rendered.');
-      var gridView = this.gridView = new Marionette.DatagridView({
+      this.gridView = new Marionette.DatagridView({
+        // 让DatagridView 在 this.ui.grid 中渲染
+        el: this.ui.grid,
         // 绑定this.model到datagridView
         model: this.model,
         // jquery.easyui datagrid的参数
@@ -42,19 +43,11 @@ define([
             ]}
           ]]
         }
-      });
-
-      this.showChildView('grid', gridView);
+      }).render();
     },
     doSearch: function() {
-      var $form = this.ui.form;
       // Get query params
-      var queryParams = {
-        name: $form.find('input[name="name"]').val(),
-        tel: $form.find('input[name="tel"]').val(),
-        beginDate: $form.find('input[name="beginDate"]').val(),
-        endDate: $form.find('input[name="endDate"]').val()
-      };
+      var queryParams = Backbone.Syphon.serialize(this.ui.form);
       // fetch data
       this.gridView.fetch(queryParams);
     },
@@ -62,11 +55,15 @@ define([
       if (this.detailView) {
         this.detailView.model.set(rowData)
       } else {
-        this.detailView = new DetailView({model: new DetailModel(rowData)}).render();
+        this.detailView = new DetailView({model: new UserModel(rowData)}).render();
       }
     },
     doEdit: function(rowData, rowIndex) {
-      console.log('doEdit', rowData)
+      if (this.editView) {
+        this.editView.model.set(rowData)
+      } else {
+        this.editView = new EditView({model: new UserModel(rowData)}).render();
+      }
     },
     doEnableOrDisable: function(rowData, rowIndex) {
       console.log('doEnableOrDisable', rowData)

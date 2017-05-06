@@ -13,6 +13,12 @@ server.use(middlewares)
 //   res.send('403', {error: '你被禁止访问。'});
 // })
 
+// 拦载用户管理下的增、删、改操作
+server.all(common.prefix + '/users/*', (req, res) => {
+  console.log('body', req.body)
+  res.status(201).json({});
+})
+
 // To handle POST, PUT and PATCH you need to use a body-parser
 // You can use the one used by JSON Server
 server.use(jsonServer.bodyParser)

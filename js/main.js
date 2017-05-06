@@ -8,6 +8,7 @@ require.config({
     underscore: 'lib/underscore/underscore',
     backbone: 'lib/backbone/backbone',
     'backbone.radio': 'lib/marionette/backbone.radio',
+    'backbone.syphon': 'lib/marionette/backbone.syphon',
     marionette: 'lib/marionette/backbone.marionette',
     text: 'lib/text/text.min', //用于requirejs导入html类型的依赖
     moment: 'lib/moment/moment.min',
@@ -48,7 +49,7 @@ require.config({
       exports: 'Backbone'
     },
     marionette: {
-      deps: ['backbone', 'backbone.radio'],
+      deps: ['backbone', 'backbone.radio', 'backbone.syphon'],
       exports: 'Marionette'
     },
     bootstrap: ['jquery'],

@@ -2,8 +2,8 @@ var fs = require('fs');
 var path = require('path');
 
 
-function writeFiles(inputPath, outPath, modulePath, moduleName) {
-  var exts = ['.controller.js', '.html', '.model.js', '.view.js'];
+function writeFiles(inputPath, outPath, modulePath, moduleName, routePath) {
+  var exts = ['.controller.js', '.html', '.view.model.js', '.view.js'];
   var source, filepath;
 
   exts.forEach(function(ext) {
@@ -11,7 +11,9 @@ function writeFiles(inputPath, outPath, modulePath, moduleName) {
     
     if (fs.existsSync(filepath)) {
       source = fs.readFileSync(filepath, {encoding: 'utf8'});
-      source = source.replace(/\{\{module\-path\}\}/g, modulePath).replace(/\{\{module\-name\}\}/g, moduleName);
+      source = source.replace(/\{\{module\-path\}\}/g, modulePath)
+        .replace(/\{\{module\-name\}\}/g, moduleName)
+        .replace(/\{\{route\-path\}\}/g, routePath);
       fs.writeFileSync(outPath + moduleName + ext, source, {encoding: 'utf8'});
     }
   });  
@@ -23,10 +25,14 @@ function createModuleFiles(input) {
   // modules 的根目录
   var basePath = path.resolve(__dirname, '../js/modules') + '/';
   var examplePath = path.resolve(__dirname, './example') + '/';
-  var input, modulePath, moduleBasePath, moduleName, source;
+  var input, routePath, modulePath, moduleBasePath, moduleName, source;
 
   // 避免在使用String.split()时，返回的数组，最后一个为空字符
-  input = input.replace(/\/$/, '').split('/');
+  input = input.replace(/\/$/, '');
+  // 路由地址，在前面加上'/'
+  routePath = '/' + input.replace(/^\//, '');
+  // 把input按'/'拆分成数组
+  input = input.split('/');
         
   if (input.length > 1) { // 多级路由
     // 最后一个为 moduleName
@@ -49,7 +55,7 @@ function createModuleFiles(input) {
     }
   });
 
-  writeFiles(examplePath, moduleBasePath, modulePath, moduleName);
+  writeFiles(examplePath, moduleBasePath, modulePath, moduleName, routePath);
 
   console.log('Build end.');
 }

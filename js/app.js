@@ -9,8 +9,7 @@ define([
   'common',
   'modules/main/header.view', 
   'modules/main/sidebar.view', 
-  'modules/main/main-header.view',
-  'modules/main/main-header.model'
+  'modules/main/main-header.view'
 ], function(
   $, 
   _, 
@@ -22,8 +21,7 @@ define([
   Common,
   HeaderView, 
   SidebarView, 
-  MainHeaderView,
-  MainHeaderModel
+  MainHeaderView
 ) {
   'use strict';
 
@@ -130,7 +128,7 @@ define([
         } 
         // 初始化mainHaderView
         else {
-          mainHeaderModel = new MainHeaderModel({title: routeData.title});
+          mainHeaderModel = new Backbone.Model({title: routeData.title});
           App.root.showChildView('main-header', new MainHeaderView({model: mainHeaderModel}));
         }
 
@@ -196,6 +194,7 @@ define([
   App.prototype.renderMainContent = function(view) {
     // TODO: main-content 视图更新后，用slimScroll插件来做内容滚动处理？
     this.root.showChildView('main-content', view);
+    // this.mainChannel.trigger('main-content:shown');
   }
 
 
