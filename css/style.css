@@ -134,3 +134,8 @@
 .datagrid-view .datagrid-btable tbody > tr > td .link + .link {
   margin-left: 10px;
 }
+
+
+#main > .content-wrapper > .content > .box {
+  display: none;
+}

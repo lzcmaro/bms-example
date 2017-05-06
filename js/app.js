@@ -6,6 +6,7 @@ define([
   'app.layout', 
   'app.model', 
   'app.router',
+  'app.controller',
   'common',
   'modules/main/header.view', 
   'modules/main/sidebar.view', 
@@ -18,6 +19,7 @@ define([
   LayoutView, 
   AppModel, 
   AppRouter, 
+  AppController,
   Common,
   HeaderView, 
   SidebarView, 
@@ -27,24 +29,29 @@ define([
 
   var App = Marionette.Application.extend({
     initialize: function(options) {
-      console.log('App initialize.', options);
-      // TODO: 登录校验   
+      console.log('App initialize.');
+      // TODO: 登录校验  
+
+      
+      // 设置app.model，方便后面使用
+      this.model = new AppModel();
+      // 注册layoutView
+      this.root = new LayoutView(/*{model: this.model}*/);
+
+      // 初始化事件管道
+      this.headerChannel = Backbone.Radio.channel(Common.channel.header);
+      this.sidebarChannel = Backbone.Radio.channel(Common.channel.sidebar);
+      this.mainChannel = Backbone.Radio.channel(Common.channel.main);
+      this.channel = Backbone.Radio.channel(Common.channel.app); 
     },
     onBeforeStart: function() {
       console.log('App before:start.');
 
-      // 注册layoutView
-      this.root = new LayoutView();
-      // 设置app.model，方便后面使用
-      this.model = new AppModel();
-      // 渲染root视图
-      this.root.showChildView('header', new HeaderView({model: this.model.get('account')}));
-      this.root.showChildView('sidebar', new SidebarView({collection: this.model.get('menuList')}));
- 
-      this.headerChannel = Backbone.Radio.channel(Common.channel.header);
-      this.sidebarChannel = Backbone.Radio.channel(Common.channel.sidebar);
-      this.mainChannel = Backbone.Radio.channel(Common.channel.main);
- 
+      // 初始化AppController，先渲染LayoutView();
+      this.controller = new AppController();
+      // 由于AppRouter需要加载系统菜单，放在了onStart()中初始化
+      // this.router = new AppRouter({controller: this.controller});
+      
       /**
        * view与view间的通信通过App来调度（统一使用Application.vent事件聚合器）
        * ----------------------------------------------------------------
@@ -78,13 +85,18 @@ define([
     },
     onStart: function() {
       console.log('App start.');
+      var that = this;
       // 加载用户信息以及系统菜单列表数据
       this.model.fetch()
         .done(_.bind(this.initAppRouter, this))
-        .done(_.bind(this.listenAppRouter, this))
+        .done(function() {
+          // 广播路由初始化完成事件，以便让AppController做路由监听处理
+          that.channel.trigger('router:initialized');
+        })
         .done(function() {
           // 监听路由变化
-          Backbone.history.start()
+          Backbone.history.start();
+          that.channel.trigger('app:started');
         });
     },
     /**
@@ -99,45 +111,15 @@ define([
         routes[value.route] = value.route;
       });
 
+      // 添加404路由
+      // 没把它内置在appRoutes中，是因为它的优先级比routes要高，
+      // 先设置的话，会导致后面设置的routes无效，都转到了AppController中
+      // 故只在AppRouter中，设置了appRoutes: {'': 'index'}首页的路由
+      routes['*action'] = '__not_found__';
+
       // 初始化Router
-      this.router = new AppRouter({routes: routes});
-    },
-    /**
-     * 监听AppRouter.route事件
-     * 在route变化后，更新MainView的header（后面可考虑添加导航面包屑，或者新增tabs页）
-     * @param  {String} route  路由地址
-     * @param  {Array}  args   args[0]为location.search，其它值暂未知
-     */
-    listenAppRouter: function() {
-      if (!this.router) return;
-
-      this.router.on('route', function(route, args) {
-        console.log('AppRouter.onRoute: ', route, args);
-        var App = window.App;
-        var routeData = App.routeMap[route];
-        var mainHeaderView;
-        var mainHeaderModel;
-        
-        if (!routeData) return;
-
-        mainHeaderView = App.root.getChildView('main-header');
-
-        // 如果view已存在，直接改变它的model即可
-        if (mainHeaderView) {
-          mainHeaderView.model.set('title', routeData.title);
-        } 
-        // 初始化mainHaderView
-        else {
-          mainHeaderModel = new Backbone.Model({title: routeData.title});
-          App.root.showChildView('main-header', new MainHeaderView({model: mainHeaderModel}));
-        }
-
-        // 销毁main-content视图，避免当前路由没有实际controller时，还是显示原来的main-content视图
-        App.root.detachChildView('main-content');
-
-        // TODO：首次进入页面时，通知SidebarView选中菜单项
-        
-      });
+      // 对于routes，它会自动设值到this.routes中
+      this.router = new AppRouter({routes: routes, controller: this.controller});
     },
     /**
      * 获取路由数据（根据系统菜单生成）
@@ -145,9 +127,6 @@ define([
      */
     getAppRoutes: function() {
       var routeMap = {}, menuList = this.model.get('menuList').toJSON(), loop;
-
-      // 已经存在routeMap时，直接返回this.routeMap
-      if (this.routeMap) return this.routeMap;
 
       // 菜单数据为空时，直接返回空对象
       if (!menuList || menuList.length <= 0) return {};
@@ -192,9 +171,27 @@ define([
    * @param {Marionette.View} view Marionette.View的实例对象
    */
   App.prototype.renderMainContent = function(view) {
+    var rootLayout = this.root;
+
+    // 监听当前将要被挂载的view的before:detach事件，在detach前，把.box面板设为隐藏
+    view.on('before:detach', function() {
+      rootLayout.$el.find('#main .content .box').hide();
+    })
+
+    // 显示被隐藏的.box面板
+    rootLayout.$el.find('#main .content .box').show();
     // TODO: main-content 视图更新后，用slimScroll插件来做内容滚动处理？
-    this.root.showChildView('main-content', view);
+    rootLayout.showChildView('main-content', view);
     // this.mainChannel.trigger('main-content:shown');
+  }
+
+  /**
+   * 判断当前路由是否有效
+   * @param  {String} route 路由地址
+   * @return {Boolean}      如果当前路由地址在App.routeMap能找到，说明它是有效的
+   */
+  App.prototype.isValidRoute = function(route) {
+    return !!this.routeMap[route]
   }
 
 

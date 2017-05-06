@@ -1,19 +1,28 @@
 define(['underscore', 'marionette'], function(_, Marionette) {
   /**
    * AppRouter
-   * 路由数据在 initialize 中设值，且设置的是routes，而不是AppRoutes.
-   * 因为AppRoutes必须保证路由所配置的ActionMethod是存在的（在Controller或AppRouter中）
+   * 路由数据routes，由外边的Application设置。注意的是，设置的是routes，而不是appRoutes，
+   * 因为appRoutes必须保证路由所配置的ActionMethod是存在的（在Controller或AppRouter中）
    * 而routes不要求，在没有ActionMethod的情况下，它只是忽略掉。
    * 所以这里利用这个特性，在onRoute()中动态加载相应的Controller来处理对应的路由请求。
    */
   var AppRouter = Marionette.AppRouter.extend({
-     initialize: function(options) {
-      console.log('AppRouter initialize.');
-      this.routes = options ? options.routes : {};
+    /**
+     * appRoutes 配置index，让app.controller处理
+     * 其它模块的路由，由onRoute()方法动态加载
+     */
+    appRoutes: {
+      '': 'index'
     },
-    onRoute: function(name, path, args) {
+    initialize: function(options) {
+      console.log('AppRouter initialize.');
+    },
+    onRoute: function(action, path, args) {
+      // 可能是无效路由，如：index首页路由，或者是404路由，这里直接return
+      if (!App.isValidRoute(action)) return;
+
       var that = this;
-      var controllerPath = this.getControllerPath(name);
+      var controllerPath = this.getControllerPath(action);
       
 
       // 这里加载实际的Controller，并且调用其route()方法
@@ -21,7 +30,7 @@ define(['underscore', 'marionette'], function(_, Marionette) {
       require([controllerPath], function(controller) { 
         if (that.currentController && that.currentController !== controller) {
           // 调用原来的controller.onRouteChange()方法，通知其路由发生了变化
-          that.currentController.onRouteChange && that.currentController.onRouteChange(name);
+          that.currentController.onRouteChange && that.currentController.onRouteChange(action);
         }
 
         that.currentController = controller;

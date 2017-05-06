@@ -16,6 +16,7 @@
      * 这里定义各管道的名称，便于后面获取
      */
     this.channel = {
+      app: 'app-channel',
       header: 'header-channel',
       sidebar: 'sidebar-channel',
       main: 'main-channel'
