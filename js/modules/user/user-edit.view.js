@@ -36,8 +36,8 @@ define([
       e.preventDefault();
 
       // 如果数据没有变化，不做保存操作
-      // 注意的是，需要排除modelData中的ID值后，再比较
-      if (_.isEqual(formData, _.omit(modelData, 'id'))) {
+      // 注意的是，需要排除modelData中的ID和status值后，再比较
+      if (_.isEqual(formData, _.omit(modelData, ['id', 'status']))) {
         return this.$dialog.hide();
       } 
 
