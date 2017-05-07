@@ -16,22 +16,28 @@ define([
      * 由于需要给modal中的按钮绑定事件，这里重写ModalView的iniinitialize
      */
     initialize: function(options) {
+      // model.isNew() 会根据当前model是否存在id值来判断
+      var isNew = this.model.isNew();    
       // this.$dialog 为 ModalView 中所约定使用的变量，这里不能变更，否则无法显示弹层
       this.$dialog = $.modal({
         show: false, // 初始化时，不显示
         className: 'dlg-user-edit',
-        title: '用户修改',
+        title: isNew ? '新增用户' : '用户编辑',
         buttons: [{
           text: '取消',
           handler: 'close'
         }, {
-          text: '保存',
+          text: isNew ? '新增' : '保存',
           handler: _.bind(this.onSubmit, this)
         }]
       });
     },
     formSubmitted: function(e) {
-      var that = this, formData = Backbone.Syphon.serialize(this), model = this.model, modelData = model.toJSON();
+      var that = this, 
+        formData = Backbone.Syphon.serialize(this), 
+        model = this.model, 
+        modelData = model.toJSON(),
+        isNew = model.isNew();
 
       e.preventDefault();
 
@@ -48,11 +54,13 @@ define([
         model.save().done(function() {
           that.$dialog.hide();
           // 通知main-content刷新视图
-          that.trigger('user:updated')
+          that.trigger(isNew ? 'user:added' : 'user:updated')
         })       
       } else {
         // 数据不合法...
-        $.alert('提示', model.validationError)
+        $.alert('提示', model.validationError);
+        // 把model数据重置，避免它再次点击保存时，把弹层关闭了，因为这时候，model的数据和formData是一致的
+        model.set(modelData, {silent: true});
       }
     },
     onSubmit: function() {

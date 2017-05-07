@@ -5,7 +5,7 @@ define([
   'marionette', 
   'text!modules/user/user.html',
   'modules/user/user-detail.view',
-  'modules/user/user-edit.view',
+  'modules/user/user-add-edit.view',
   'modules/user/user.model',
   'common'
 ], function($, _, Backbone, Marionette, userTemplate, DetailView, EditView, UserModel, Common) {
@@ -16,7 +16,8 @@ define([
       grid: '.datagrid'
     },
     events: {
-      'click .btn-search': 'doSearch'
+      'click .btn-search': 'doSearch',
+      'click .btn-add': 'doAdd'
     },
     initialize: function(options) {
       console.log('UserView initialize.');
@@ -68,6 +69,18 @@ define([
         this.detailView.model.set(rowData)
       } else {
         this.detailView = new DetailView({model: new UserModel(rowData)}).render();
+      }
+    },
+    doAdd: function() {
+      var that = this, addView = this.addView;
+      if (addView) {
+        addView.render()
+      } else {
+        addView = this.addView = new EditView({model: new UserModel()}).render();
+        addView.on('user:added', function() {
+          App.showMessage('用户添加成功。');
+          that.reload();
+        })
       }
     },
     doEdit: function(rowData, rowIndex) {

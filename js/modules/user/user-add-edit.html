@@ -12,11 +12,13 @@
         <input type="text" class="form-control" name="tel" value="<%=data.tel%>" placeholder="请输入电话号码">
       </div>
     </div>
+    <%if (data.id) {%>
     <div class="form-group">
       <label class="col-sm-3 control-label">创建时间</label>
       <div class="col-sm-7">
         <input type="text" class="form-control" name="createDate" value="<%=data.createDate%>" readonly="readonly">
       </div>
     </div>
+    <%};%>
   </form>
 </script>

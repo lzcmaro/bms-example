@@ -13,7 +13,7 @@ server.use(middlewares)
 //   res.send('403', {error: '你被禁止访问。'});
 // })
 
-// 拦载用户管理下的增、删、改操作
+// 拦载用户管理下的删除、修改操作
 server.all(common.prefix + '/users/*', (req, res) => {
   res.status(201).json({});
 })

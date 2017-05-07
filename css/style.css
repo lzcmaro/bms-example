@@ -158,6 +158,13 @@
  * ----------------------
  */
 .form {}
+.form.form-inline .form-group {
+  margin-right: 5px;
+}
+// .form.form-inline .form-group label {
+//   min-width: 80px;
+//   text-align: right;
+// }
 .form .form-actions {
   margin-top: 20px;
 }
@@ -172,6 +179,7 @@
 .form.form-horizontal .form-group label.col-sm-3 {
   padding-right: 0;
 }
+
 
 /**
  * Datagrid
