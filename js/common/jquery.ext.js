@@ -185,11 +185,63 @@
    * 由于easyui 已存在 alert，这里把bootstrap alert封装成tip
    * ---------------------------------------
    */
-  var tipDefaultOptions = {
+  $.tips = function(options) {
+    var defaultOptions = {
+      target: 'body', // 指定tip显示时的目标位置，默认显示在body下。类型为String(Selector)或jquery对象
+      type: 'info', // 类型，分别有success, info, warning, danger
+      className: null, // 自定义样式类
+      msg: '', // 显示的提示信息
+      closeButton: true, // 是否显示关闭按钮
+      autoClose: true, // 是否自动关闭
+      duration: 2500 // 自动隐藏的时间间隔，毫秒
+    };
+
+    var tpl = '<div class="tips alert" role="alert" aria-hidden="true"></div>';
+    var closeButtonTpl = '<button type="button" class="close" data-dismiss="alert" aria-label="Close">'
+                       +   '<span aria-hidden="true">&times;</span>'
+                       + '</button>';
+    var $tips = $(tpl);
+    var tipOptions = $.extend({}, defaultOptions, options);
+    var timer;
+
+    if (tipOptions.closeButton !== false) {
+      $tips.addClass('alert-dismissible').append(closeButtonTpl);
+    }
+
+    if (tipOptions.autoClose !== false) {
+      timer = setTimeout(function() {
+        $tips.alert('close')
+      }, tipOptions.duration || defaultOptions.duration)
+    }
+
+    $tips.append(tipOptions.msg)
+      .addClass('alert-' + tipOptions.type || defaultOptions.type)
+      .addClass(tipOptions.className); 
+
+    // 添加$tips.close方法，方便外边调用
+    $tips.close = function() {
+      return $(this).alert('close');
+    }
+    // 监听它的close事件，使用jquery slideUp动效
+    $tips.on('close.bs.alert', function() {
+      var $this = $(this);
+      $this.slideUp('slow', function() {
+        // 由于阻止了默认的关闭事件，这里需要手动remove
+        $this.remove();
+      });
+
+      // 销毁timer
+      clearTimeout(timer);
+      timer = null;
+
+      // 阻击原来$.fn.alert('close')的事件，否则动效出现不了
+      return false;
+    });
+
+    return $tips.appendTo(tipOptions.target).alert().slideDown('slow');
 
   };
-
-  // var 
+  
 
   
 
@@ -197,61 +249,57 @@
    * Modal 扩展于 bootstrap modal
    * ---------------------------------------
    */
-  var modalDefaultOptions = {
-    show: true, // 初始化时是否显示
-    backdrop: true, // 是否显示遮盖层
-    keyboard: true, // 是否在按下键盘ESC键时，关闭弹层
-    className: '', // 添加到modal-dialog中的样式
-    header: true, // 是否显示Modal header
-    closeButton: true, // 是否显示Modal header中的关闭按钮
-    title: '', // Modal header显示的Title
-    body: '', // Modal body显示的内容，可为jquery实例对象或者HTML String
-    buttons: [{
-      text: '确定',
-      handler: 'close'
-    }] // Modal footer显示的按钮，如果为空，Modal footer将不显示
-    /**
-     * buttons：
-     *  [{ 
-          text: '关闭', // 按钮显示的文本
-          className: 'btn-default', // 按钮的样式，默认最后一个为btn-primary，其它为btn-default
-          handler: 'close' // 如果仅仅需要关闭弹层，可指定handler:'close'，否则指定handler事件
-        }, {
-          text: '确定',
-          className: 'btn-primary',
-          handler: null
-        }]
-     */
-  };
-  var tpl = '<div class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">'
-          +   '<div class="modal-dialog">'
-          +     '<div class="modal-content">'
-          +       '<div class="modal-body"></div>'
-          +     '</div>'
-          +   '</div>'
-          + '</div>';
+  $.modal = function (options) {
+    var defaultOptions = {
+      show: true, // 初始化时是否显示
+      backdrop: true, // 是否显示遮盖层
+      keyboard: true, // 是否在按下键盘ESC键时，关闭弹层
+      className: '', // 添加到modal-dialog中的样式
+      header: true, // 是否显示Modal header
+      closeButton: true, // 是否显示Modal header中的关闭按钮
+      title: '', // Modal header显示的Title
+      body: '', // Modal body显示的内容，可为jquery实例对象或者HTML String
+      buttons: [{
+        text: '确定',
+        handler: 'close'
+      }] // Modal footer显示的按钮，如果为空，Modal footer将不显示
+      /**
+       * buttons：
+       *  [{ 
+            text: '关闭', // 按钮显示的文本
+            className: 'btn-default', // 按钮的样式，默认最后一个为btn-primary，其它为btn-default
+            handler: 'close' // 如果仅仅需要关闭弹层，可指定handler:'close'，否则指定handler事件
+          }, {
+            text: '确定',
+            className: 'btn-primary',
+            handler: null
+          }]
+       */
+    };
+    var tpl = '<div class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">'
+            +   '<div class="modal-dialog">'
+            +     '<div class="modal-content">'
+            +       '<div class="modal-body"></div>'
+            +     '</div>'
+            +   '</div>'
+            + '</div>';
 
-  var headerTpl = '<div class="modal-header"></div>';
-  var footerTpl = '<div class="modal-footer"></div>';
-  var buttonTpl = '<button type="button"></button>';
-
-  /**
-   * 封装bootstrap modal
-   * @param {Object} options modal配置，见上面的modalDefaultOptions
-   */
-  function modal(options) {
+    var headerTpl = '<div class="modal-header"></div>';
+    var footerTpl = '<div class="modal-footer"></div>';
+    var buttonTpl = '<button type="button"></button>';
+    
     var $modal = $(tpl),
       $body = $modal.find('.modal-body'),
-      modalOptions = $.extend({}, modalDefaultOptions, options),
+      modalOptions = $.extend({}, defaultOptions, options),
       $header, $footer;
 
     $body.html(modalOptions.body);
 
-    if (modalOptions.header === true) {
+    if (modalOptions.header !== false) {
       $header = $(headerTpl).insertBefore($body);
-      if (modalOptions.closeButton === true) {
+      if (modalOptions.closeButton !== false) {
         $(buttonTpl)
-          .html('×')
+          .html('<span aria-hidden="true">&times;</span>')
           .addClass('close')
           .attr('data-dismiss', 'modal') // 让bootstrap关联modal的关闭事件
           .appendTo($header);
@@ -282,6 +330,7 @@
       });
     }
     
+    // 添加自定义class到modal-dialog中
     $modal.appendTo('body').find('.modal-dialog').addClass(modalOptions.className);
 
     // 重写$modal.hide(), $modal.show()，方便外面使用
@@ -296,6 +345,4 @@
     // 调用jquery.fn.modal弹出modal层，并返回当前modal的jquery对象
     return $modal.modal(modalOptions);
   };
-
-  $.modal = modal;
 })(jQuery);

@@ -60,7 +60,7 @@ define([
         /**
          * 切换sidebar面板样式
          */
-        'toggle-sidebar': function() {
+        'header:toggle-sidebar': function() {
           var $body = $('body');
           var collapsed = $body.hasClass('sidebar-collapse');
           var transEndEventName = Common.getTransEndEventName();
@@ -70,8 +70,8 @@ define([
           $('#sidebar .main-sidebar').one(transEndEventName, function(){
             // 保险起见，这里在动画结束后，延时100毫秒处理
             setTimeout(function() {
-              window.App.sidebarChannel.trigger('toggle-sidebar', !collapsed);
-              window.App.mainChannel.trigger('toggle-sidebar', !collapsed);
+              window.App.sidebarChannel.trigger('sidebar:toggle-sidebar', !collapsed);
+              window.App.mainChannel.trigger('main:toggle-sidebar', !collapsed);
             }, 100)
           });
           // 切换sidebar样式
@@ -80,7 +80,7 @@ define([
         /**
          * TODO: 登出
          */
-        signout: function() {}
+        'header:signout': function() {}
       });
     },
     onStart: function() {
@@ -183,7 +183,7 @@ define([
     // TODO: main-content 视图更新后，用slimScroll插件来做内容滚动处理？
     rootLayout.showChildView('main-content', view);
     // this.mainChannel.trigger('main-content:shown');
-  }
+  };
 
   /**
    * 判断当前路由是否有效
@@ -192,7 +192,23 @@ define([
    */
   App.prototype.isValidRoute = function(route) {
     return !!this.routeMap[route]
-  }
+  };
+
+  /**
+   * 用于在系统层面上显示提示信息，采用$.tips的方式，并默认指定了其target和className
+   * @param  {String} msg      显示的信息
+   * @param  {String} type     tip类型：success, info, warning, danger
+   * @param  {Boolean} autoClose 是否自动关闭
+   */
+  App.prototype.showMessage = function(msg, type, autoClose) {
+    $.tips({
+      className: 'tips-app',
+      target: '#main > .content-wrapper',
+      type: type,
+      msg: msg,
+      autoClose: autoClose
+    })
+  };
 
 
   // 实例化Application，并设值到window，便于后面使用

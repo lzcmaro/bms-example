@@ -116,7 +116,7 @@ define([
       this.channel = Backbone.Radio.channel(Common.channel.sidebar);
 
       // 切换sidebar状态后，重新fixSidebar
-      this.channel.on('toggle-sidebar', this.fixSidebar.bind(this))
+      this.channel.on('sidebar:toggle-sidebar', this.fixSidebar.bind(this))
     },
     onRender: function() {
       console.log('SidebarView is rendered.');

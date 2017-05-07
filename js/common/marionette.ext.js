@@ -1,9 +1,9 @@
 ;(function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined'
-    && typeof require === 'function' ? module.exports = factory(require('jquery'), require('underscore'), require('marionette'), require('common')) :
-  typeof define === 'function' && define.amd ? define(['jquery', 'underscore', 'marionette', 'common'], factory) :
-  factory(global.jQuery, global._, global.Marionette, global.Common)
-}(this, function ($, _, Mn, Common) {
+    && typeof require === 'function' ? module.exports = factory(require('jquery'), require('underscore'), require('marionette')) :
+  typeof define === 'function' && define.amd ? define(['jquery', 'underscore', 'marionette'], factory) :
+  factory(global.jQuery, global._, global.Marionette)
+}(this, function ($, _, Mn) {
   'use strict';
 
   var noop = function() {};
@@ -34,9 +34,6 @@
         console.log('DatagridView initialize.', options);
         // 用于保存datagrid columns 配置中的buttons对象
         this.gridColumnButtons = {};
-        this.mainChannel = Backbone.Radio.channel(Common.channel.main);
-        // sidebar展开或收缩时，刷新datagrid的大小
-        this.mainChannel.on('toggle-sidebar', _.bind(this.resize, this));
         // model 的数据发生变化时，调用this._refreshView()刷新datagrid视图
         this.listenTo(this.model, "change", this._refreshView);
         

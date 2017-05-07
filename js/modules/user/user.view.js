@@ -6,8 +6,9 @@ define([
   'text!modules/user/user.html',
   'modules/user/user-detail.view',
   'modules/user/user-edit.view',
-  'modules/user/user.model'
-], function($, _, Backbone, Marionette, userTemplate, DetailView, EditView, UserModel) {
+  'modules/user/user.model',
+  'common'
+], function($, _, Backbone, Marionette, userTemplate, DetailView, EditView, UserModel, Common) {
   return Marionette.View.extend({
     template: userTemplate,
     ui: {
@@ -19,8 +20,14 @@ define([
     },
     initialize: function(options) {
       console.log('UserView initialize.');
+      var that = this;
       // 初始化一个UserModel，以方便启用、停用操作时使用
       this.userModel = new UserModel();
+      this.channel = Backbone.Radio.channel(Common.channel.main);
+      // sidebar切换后，把gridView重设一下大小
+      this.channel.on('main:toggle-sidebar', function() {
+        that.gridView && that.gridView.resize()
+      })
     },
     onRender: function() {
       console.log('UserView is rendered.');
@@ -64,13 +71,16 @@ define([
       }
     },
     doEdit: function(rowData, rowIndex) {
-      var editView = this.editView;
+      var that = this, editView = this.editView;
       if (editView) {
         editView.model.set(rowData)
       } else {
         editView = this.editView = new EditView({model: new UserModel(rowData)}).render();
         // 数据修改后，刷新列表视图
-        editView.on('user:updated', _.bind(this.reload, this))
+        editView.on('user:updated', function() {
+          App.showMessage('用户数据修改成功。');
+          that.reload();
+        })
       }
     },
     doEnableOrDisable: function(rowData, rowIndex) {
@@ -83,7 +93,10 @@ define([
         if (r) {
           // 发送一个patch请求，修改用户status
           userModel.save({'status': rowData.status == 1 ? 0 : 1}, {patch: true})
-            .done(_.bind(that.reload, that))
+            .done(function() {
+              App.showMessage('用户数据修改成功。');
+              that.reload();
+            })
         }
       })
     },

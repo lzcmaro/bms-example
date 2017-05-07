@@ -47,6 +47,30 @@
      -moz-box-shadow: none;
           box-shadow: none;
 }
+.callout.callout-success,
+.alert-success {
+  color: #3c763d !important;
+  background-color: #dff0d8 !important;
+  border-color: #d6e9c6 !important;
+}
+.callout.callout-info,
+.alert-info {
+  color: #31708f !important;
+  background-color: #d9edf7 !important;
+  border-color: #bce8f1 !important;
+}
+.callout.callout-warning,
+.alert-warning {
+  color: #8a6d3b !important;
+  background-color: #fcf8e3 !important;
+  border-color: #faebcc !important;
+}
+.callout.callout-danger,
+.alert-danger {
+  color: #a94442 !important;
+  background-color: #f2dede !important;
+  border-color: #ebccd1 !important;
+}
   
 
 
@@ -83,11 +107,40 @@
 
 
 
+
+
+
+
+/**
+ * 业务类样式
+ * ----------------------
+ */
 #container, 
 #main {
   height: 100%;
   // overflow: hidden;
 }
+#main > .content-wrapper {
+  position: relative;
+}
+#main > .content-wrapper > .content > .box {
+  display: none;
+}
+
+/**
+ * Tips
+ */
+.tips {}
+.tips.tips-app {
+  display: none;
+  position: absolute;
+  width: 100%;
+  left: 0;
+  right: 0;
+  top: 50px;
+}
+
+
 
 /**
  * Header
@@ -134,9 +187,4 @@
 }
 .datagrid-view .datagrid-btable tbody > tr > td .link + .link {
   margin-left: 10px;
-}
-
-
-#main > .content-wrapper > .content > .box {
-  display: none;
 }

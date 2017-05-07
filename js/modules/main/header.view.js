@@ -26,11 +26,11 @@ define([
     },
     onToggleSidebar: function(e) {
       e.preventDefault();
-      this.channel.trigger('toggle-sidebar')
+      this.channel.trigger('header:toggle-sidebar')
     },
     onSignout: function(e) {
       e.preventDefault();
-      this.channel.trigger('signout')
+      this.channel.trigger('header:signout')
     }
   })
 })

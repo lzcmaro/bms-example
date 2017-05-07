@@ -15,7 +15,6 @@ server.use(middlewares)
 
 // 拦载用户管理下的增、删、改操作
 server.all(common.prefix + '/users/*', (req, res) => {
-  console.log('body', req.body)
   res.status(201).json({});
 })
 
