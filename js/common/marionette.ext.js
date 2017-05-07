@@ -55,20 +55,20 @@
         // 如果this.$el不是默认的，说明外边指定了el属性，这里初始化datagrid
         if (!this.$el.hasClass('__datagrid__')) {
           // 这里延时执行，因为当前DOM还是未attach状态的，可能会导致easyui datagrid在计算宽度时有问题
-          setTimeout(_.bind(this.initDatagrid, this), 10);
+          setTimeout(_.bind(this._initDatagrid, this), 10);
         }
       },
       onAttach: function() {
         console.log('DatagridView is attached.')
-        this.initDatagrid();
+        this._initDatagrid();
       },
-      initDatagrid: function() {
+      _initDatagrid: function() {
         this.$el.datagrid(this._getGridOptions());
         // 给操作按钮.link委派click事件
         // 注意的是，表格数据并没有显示在this.$el上面，所以不能在this.events中处理
-        this.$el.parent().on('click', '.link', _.bind(this.onLinkClick, this));
+        this.$el.parent().on('click', '.link', _.bind(this._onLinkClick, this));
       },
-      onLinkClick: function(evt) { 
+      _onLinkClick: function(evt) { 
         var $target = $(evt.currentTarget);
         var field = $target.attr('field');
         var index = $target.index();
@@ -152,7 +152,7 @@
         if (!buttonOptions || !buttonOptions.length) return;
 
         _.each(buttonOptions, function(item) {
-          var label = _.isFunction(item.formatter) ? item.formatter() : item.label || '';
+          var label = _.isFunction(item.formatter) ? item.formatter(value, row, index) : item.label || '';
           tpl += link.replace(/\$\{label\}/g, label || '')
             .replace(/\$\{className\}/, className)
             .replace(/\$\{field\}/, field);
@@ -181,6 +181,9 @@
         // 获取jquery.easyui datagrid 缓存起来的options
         var data = $grid.data('datagrid');
         var opts = data ? data.options : {};
+
+        // 避免param为空时，导致分页参数合并不过来
+        param = param || {};
         
 
         if (!_.isFunction(success) || !_.isFunction(error)) {

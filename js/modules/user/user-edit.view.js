@@ -19,8 +19,8 @@ define([
       // this.$dialog 为 ModalView 中所约定使用的变量，这里不能变更，否则无法显示弹层
       this.$dialog = $.modal({
         show: false, // 初始化时，不显示
-        className: 'dlg-user-detail',
-        title: '用户信息',
+        className: 'dlg-user-edit',
+        title: '用户修改',
         buttons: [{
           text: '取消',
           handler: 'close'
@@ -31,7 +31,7 @@ define([
       });
     },
     formSubmitted: function(e) {
-      var formData = Backbone.Syphon.serialize(this), modelData = this.model.toJSON();
+      var that = this, formData = Backbone.Syphon.serialize(this), modelData = this.model.toJSON();
 
       e.preventDefault();
 
@@ -42,8 +42,12 @@ define([
       } 
 
       // 避免刷新视图，不能直接调用save(formData)
-      if (this.model.set(formData, {silent: true}).save()){
-        this.$dialog.hide();
+      if (this.model.set(formData, {silent: true})){
+        this.model.save().done(function() {
+          that.$dialog.hide();
+          // 通知main-content刷新视图
+          that.trigger('user:updated')
+        })       
       } else {
         // TODO: 数据不合法...
       }
