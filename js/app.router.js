@@ -15,7 +15,7 @@ define(['underscore', 'marionette'], function(_, Marionette) {
       '': 'index'
     },
     initialize: function(options) {
-      console.log('AppRouter initialize.');
+      console.log('App.Router initialize.');
     },
     onRoute: function(action, path, args) {
       // 可能是无效路由，如：index首页路由，或者是404路由，这里直接return

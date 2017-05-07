@@ -1,9 +1,4 @@
-;(function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined'
-    && typeof require === 'function' ? module.exports = factory(require('jquery'), require('underscore'), require('marionette')) :
-  typeof define === 'function' && define.amd ? define(['jquery', 'underscore', 'marionette'], factory) :
-  factory(global.jQuery, global._, global.Marionette)
-}(this, function ($, _, Mn) {
+define(['jquery', 'underscore', 'marionette', 'common'], function ($, _, Mn, Common) {
   'use strict';
 
   var noop = function() {};
@@ -23,7 +18,7 @@
       rownumbers: true,
       singleSelect: true,
       pagination: true,
-      pageSize: 20
+      pageSize: Common.defaultPageSize
     };
 
     var datagridView = Mn.View.extend({
@@ -224,11 +219,6 @@
 
     return datagridView;
   })();
-
-
-
-
-
   /**
    * Marionette.ModalView 
    * 继承于 Marionette.View，结合 bootstrap modal 作为弹层视图基类
@@ -270,11 +260,6 @@
       }
     })
   })();
-
-
-
-
-
   /**
    * 重写Marionette.View.prototype.serializeData
    * 如果数据为model，把它放到data中，避免在模板中引用变量时出现未定义的错误
@@ -301,4 +286,4 @@
   
   };
   
-}));
+});

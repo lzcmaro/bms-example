@@ -130,8 +130,7 @@
 /**
  * Tips
  */
-.tips {}
-.tips.tips-app {
+.tips {
   display: none;
   position: absolute;
   width: 100%;
@@ -139,6 +138,7 @@
   right: 0;
   top: 50px;
 }
+.tips.tips-app {}
 
 
 

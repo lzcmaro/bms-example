@@ -46,7 +46,6 @@ define([
     },
     onBeforeStart: function() {
       console.log('App before:start.');
-
       // 初始化AppController，先渲染LayoutView();
       this.controller = new AppController();
       // 由于AppRouter需要加载系统菜单，放在了onStart()中初始化
@@ -83,20 +82,20 @@ define([
         'header:signout': function() {}
       });
     },
-    onStart: function() {
-      console.log('App start.');
+    onStart: function() {   
       var that = this;
       // 加载用户信息以及系统菜单列表数据
       this.model.fetch()
         .done(_.bind(this.initAppRouter, this))
         .done(function() {
           // 广播路由初始化完成事件，以便让AppController做路由监听处理
-          that.channel.trigger('router:initialized');
+          that.channel.trigger('app:router-initialized');
         })
         .done(function() {
           // 监听路由变化
           Backbone.history.start();
-          that.channel.trigger('app:started');
+          // that.channel.trigger('app:started');
+          console.log('App started.');
         });
     },
     /**

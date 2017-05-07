@@ -113,10 +113,13 @@ define([
     },
     initialize: function(options) {
       console.log('SidebarView initialize.');
-      this.channel = Backbone.Radio.channel(Common.channel.sidebar);
+      this.sidebarChannel = Backbone.Radio.channel(Common.channel.sidebar);
+      this.appChannel = Backbone.Radio.channel(Common.channel.app);
 
       // 切换sidebar状态后，重新fixSidebar
-      this.channel.on('sidebar:toggle-sidebar', this.fixSidebar.bind(this))
+      this.sidebarChannel.on('sidebar:toggle-sidebar', _.bind(this.fixSidebar, this));    
+      // 监听路由changed事件，更新菜单选中状态（可能当是首次进入系统的路由）
+      this.appChannel.on('app:route-changed', _.bind(this.onRouteChanged, this))
     },
     onRender: function() {
       console.log('SidebarView is rendered.');
@@ -127,11 +130,11 @@ define([
       }));
 
       // window.resize时，重新fixSidebar
-      $(window).on('resize', this.fixSidebar.bind(this));
+      $(window).on('resize', _.bind(this.fixSidebar, this));
     },
     onCollectionUpdate: function() {
       // TreeView render完成后，重新fixSidebar
-      this.getChildView('treeview').on('render', this.fixSidebar.bind(this))
+      this.getChildView('treeview').on('render', _.bind(this.fixSidebar, this))
     },
     fixSidebar: function() {
       var $sidebar = this.ui.sidebar;
@@ -223,6 +226,19 @@ define([
 
       }
 
+    },
+    /**
+     * 路由变化时，选中相应菜单项
+     * @param  {String} route 路由地址
+     */
+    onRouteChanged: function(route) {
+      var activeCls = 'active';
+      var $menu = this.ui.sidebar.find('a[data-url="' + route + '"]').parent();
+      
+      if ($menu.length && !$menu.hasClass(activeCls)) {
+        // 给当前li以及所有的上级li.treeview都添加active样式
+        $menu.addClass(activeCls).parents('li.treeview').addClass(activeCls);
+      }
     }
   });
 

@@ -22,6 +22,10 @@
       main: 'main-channel'
     };
     /**
+     * 默认的分页数据大小（一般用于jquery.easyui datagrid）
+     */
+    this.defaultPageSize = 20;
+    /**
      * 定义常用的正规表达式
      */
     this.regex = {
