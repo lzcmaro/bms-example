@@ -31,7 +31,7 @@
       tagName: 'table',
       className: '__datagrid__',
       initialize: function(options) {
-        console.log('DatagridView initialize.', options);
+        console.log('DatagridView initialize.');
         // 用于保存datagrid columns 配置中的buttons对象
         this.gridColumnButtons = {};
         // model 的数据发生变化时，调用this._refreshView()刷新datagrid视图
@@ -44,7 +44,7 @@
       },
       /**
        * 当前视图在被作为一个childView来渲染的话，它会触发onAttach()事件
-       * 而如果被渲染到已存在的element上（外面指定了el属性），它会不会触发onAttach()事件
+       * 而如果被渲染到已存在的element上（外面指定了el属性），它并不会触发onAttach()事件
        * 这里做兼容处理
        */
       onRender: function() {

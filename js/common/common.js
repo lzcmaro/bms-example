@@ -21,6 +21,12 @@
       sidebar: 'sidebar-channel',
       main: 'main-channel'
     };
+    /**
+     * 定义常用的正规表达式
+     */
+    this.regex = {
+      tel: /^1[3|4|5|7|8][0-9]{9}$/
+    }
   };
   var fn = Util.prototype;
 

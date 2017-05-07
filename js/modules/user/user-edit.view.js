@@ -31,7 +31,7 @@ define([
       });
     },
     formSubmitted: function(e) {
-      var that = this, formData = Backbone.Syphon.serialize(this), modelData = this.model.toJSON();
+      var that = this, formData = Backbone.Syphon.serialize(this), model = this.model, modelData = model.toJSON();
 
       e.preventDefault();
 
@@ -42,14 +42,17 @@ define([
       } 
 
       // 避免刷新视图，不能直接调用save(formData)
-      if (this.model.set(formData, {silent: true})){
-        this.model.save().done(function() {
+      model.set(formData, {silent: true})
+      
+      if (model.isValid()){
+        model.save().done(function() {
           that.$dialog.hide();
           // 通知main-content刷新视图
           that.trigger('user:updated')
         })       
       } else {
-        // TODO: 数据不合法...
+        // 数据不合法...
+        $.alert('提示', model.validationError)
       }
     },
     onSubmit: function() {
