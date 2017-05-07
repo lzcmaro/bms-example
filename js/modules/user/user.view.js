@@ -48,8 +48,9 @@ define([
             }},
             {field: 'createDate', title: '创建时间', align: 'right', width: 200},
             {field: '_opt', title: '操作', align: 'center', width: 180, buttons: [
-              {label: '编辑', handler: _.bind(this.doEdit, this)},
               {label: '详情', handler: _.bind(this.showDetail, this)},
+              {label: '编辑', handler: _.bind(this.doEdit, this)},
+              {label: '删除', handler: _.bind(this.doDelete, this)},             
               {handler: _.bind(this.doEnableOrDisable, this), formatter: function(value, row, index) {
                 return row.status == 1 ? '停用' : '启用'
               }}
@@ -96,6 +97,19 @@ define([
         })
       }
     },
+    doDelete: function(rowData, rowIndex) {
+      var that = this, userModel = this.userModel;
+      $.confirm('提示', '你确定要删除该用户吗？', function(r) {
+        if (r) {
+          userModel.set(rowData, {silent: true});
+          userModel.destroy()
+            .done(function() {
+              App.showMessage('用户已被删除。');
+              that.reload();
+            });
+        }
+      })
+    },
     doEnableOrDisable: function(rowData, rowIndex) {
       var that = this;
       var userModel = this.userModel;
@@ -103,7 +117,7 @@ define([
 
       $.confirm('提示', msg, function(r) {
         if (r) {
-          userModel.set(rowData);
+          userModel.set(rowData, {silent: true});
           // 发送一个patch请求，修改用户status
           userModel.save({'status': rowData.status == 1 ? 0 : 1}, {patch: true})
             .done(function() {
