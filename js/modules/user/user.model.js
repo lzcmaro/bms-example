@@ -9,9 +9,9 @@ define(['backbone', 'common'], function(Backbone, Common) {
       if (!attrs.name || !attrs.name.trim()) {
         return '姓名不能为空。'
       }
-      if (!Common.regex.tel.test(attrs.tel)) {
-        return '手机号码不正确。'
-      }
+      // if (!Common.regex.tel.test(attrs.tel)) {
+      //   return '手机号码不正确。'
+      // }
     }
   });
 });

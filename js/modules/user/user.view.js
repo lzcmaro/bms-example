@@ -99,11 +99,11 @@ define([
     doEnableOrDisable: function(rowData, rowIndex) {
       var that = this;
       var userModel = this.userModel;
-      var msg = '你确定要' + (rowData.status == 1 ? '停用' : '启用') + '该用户吗？'
-      userModel.set(rowData);
+      var msg = '你确定要' + (rowData.status == 1 ? '停用' : '启用') + '该用户吗？';
 
       $.confirm('提示', msg, function(r) {
         if (r) {
+          userModel.set(rowData);
           // 发送一个patch请求，修改用户status
           userModel.save({'status': rowData.status == 1 ? 0 : 1}, {patch: true})
             .done(function() {
