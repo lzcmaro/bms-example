@@ -1,7 +1,8 @@
 var path = require('path')
 var jsonServer = require('json-server')
 var server = jsonServer.create()
-var router = jsonServer.router(path.join(__dirname, 'db.json'))
+var db = require('./database.js')();
+var router = jsonServer.router(db)
 var middlewares = jsonServer.defaults({static: __dirname})
 var common = require('./js/common/common')
 
@@ -14,9 +15,9 @@ server.use(middlewares)
 // })
 
 // 拦载用户管理下的删除、修改操作
-server.all(common.prefix + '/users/*', (req, res) => {
-  res.status(201).json({});
-})
+// server.all(common.prefix + '/users/*', (req, res) => {
+//   res.status(201).json({});
+// })
 
 // To handle POST, PUT and PATCH you need to use a body-parser
 // You can use the one used by JSON Server
