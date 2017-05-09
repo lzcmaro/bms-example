@@ -19,16 +19,14 @@ server.use(middlewares)
 //   res.status(201).json({});
 // })
 
+// 重定向
+// server.all(common.prefix + '/*', (req, res) => {
+//   res.redirect(301, 'http://172.30.60.181:8080/api/' + req.params[0]);
+// })
+
 // To handle POST, PUT and PATCH you need to use a body-parser
 // You can use the one used by JSON Server
 server.use(jsonServer.bodyParser)
-// server.use((req, res, next) => {
-//   if (req.method === 'POST') {
-//     req.body.createdAt = Date.now()
-//   }
-//   // Continue to JSON Server router
-//   next()
-// })
 
 // Use default router
 server.use(common.prefix, router)
